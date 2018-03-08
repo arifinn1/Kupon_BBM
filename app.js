@@ -12,6 +12,9 @@ const config = require('./secrets/configuration');
 
 const app = express();
 
+// Test Passport
+require('./secrets/passport2.js')(passport);
+
 // Middleware
 app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));

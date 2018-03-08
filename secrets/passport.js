@@ -1,75 +1,34 @@
 const passport = require('passport');
+const bcrypt = require('bcrypt-nodejs');
 const LocalStrategy = require('passport-local').Strategy;
-const secret = require('./secret');
 const pool = require('../db');
-var User = require('../models/user');
-
-var async = require('async');
-var Cart = require('../models/cart');
 
 // Serialize and deserialize
-passport.serializeUser(function(user, done) {
-  done(null, user._id);
+passport.serializeUser(function(akun, done) {
+  done(null, akun.kd);
 });
 
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
+passport.deserializeUser(function(kd, done) {
+  pool.query('SELECT * FROM akun WHERE kd='+kd, function(err, res) {
+    if (err) return done(err);
+    done(null, res.rows[0]);
   })
 });
 
 
 // Middleware
 passport.use('local-login', new LocalStrategy({
-  usernameField: 'email',
+  usernameField: 'nip',
   passwordField: 'password',
   passReqToCallback: true
-}, function(req, email, password, done) {
-  User.findOne({ email: email }, function (err, user) {
+}, function(req, nip, password, done) {
+  pool.query('SELECT * FROM akun WHERE nip=$1', [nip], function (err, res) {
     if (err) return done(err);
 
-    if (!user) {
-      return done(null, false, req.flash('loginMessage', 'No user has been found'));
-    }
+    var akun = res.rows[0];
+    
 
-    if (!user.comparePassword(password)) {
-      return done(null, false, req.flash('loginMessage', 'Oops! Wrong Password'));
-    }
-
-    return done(null, user);
-  });
-}));
-
-
-passport.use(new FacebookStrategy(secret.facebook, function(token, refreshToken, profile, done) {
-  User.findOne({ facebook: profile.id }, function(err, user) {
-    if (err) return done(err);
-    if (user) {
-      return done(null, user);
-    } else {
-      async.waterfall([
-        function(callback) {
-          var newUser = new User();
-          newUser.email = profile._json.email;
-          newUser.facebook = profile.id;
-          newUser.tokens.push({ kind: 'facebook', token: token });
-          newUser.profile.name = profile.displayName;
-          newUser.profile.picture = 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
-          newUser.save(function(err) {
-            if (err) throw err;
-            callback(err, newUser);
-          });
-        },
-        function(newUser) {
-          var cart = new Cart();
-          cart.owner = newUser._id;
-          cart.save(function(err) {
-            if (err) return done(err);
-            return done(err, newUser);
-          });
-        }
-      ]);
-    }
+    return done(akun);
   });
 }));
 
