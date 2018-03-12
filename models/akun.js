@@ -47,9 +47,9 @@ function grabAkunCredentials(kdAkun, callback) {
             callback('Could not find akun with that Kd', null);
         } else {
             // Fill in loginAkun JSON
-            loginAkun.local.nip      = row.nip;
-            loginAkun.local.nama      = row.nama;
-            loginAkun.local.password      = row.password;
+            loginAkun.local.nip         = row.nip;
+            loginAkun.local.nama        = row.nama;
+            loginAkun.local.password    = row.password;
 
             callback(null, loginAkun);
         }

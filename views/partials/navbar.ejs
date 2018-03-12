@@ -16,19 +16,18 @@
 
     <ul class="nav navbar-nav navbar-right">
       <% if (!user) { %>
-      <li><a class="dropdown-toggle" data-toggle="dropdown" href="#">Signup / Login</a>
+      <li><a class="dropdown-toggle" data-toggle="dropdown" href="#">Signup / Signin</a>
         <ul class="dropdown-menu">
           <li><a href="/signup">Signup</a></li>
-          <li><a href="/signin">Login</a></li>
+          <li><a href="/signin">Signin</a></li>
         </ul>
       </li>
 
       <% }else{ %>
-      <li><a class="dropdown-toggle" data-toggle="dropdown" href="#"><%= user.profile.name %></a>
+      <li><a class="dropdown-toggle" data-toggle="dropdown" href="#"><%= nama_user %></a>
         <ul class="dropdown-menu">
           <li><a href="/profile">Profile</a></li>
-          <li><a href="/edit-profile">Edit Profile</a></li>
-          <li><a href="/logout">Logout</a></li>
+          <li><a href="/signout">Signout</a></li>
         </ul>
       </li>
 

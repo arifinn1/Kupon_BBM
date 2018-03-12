@@ -6,9 +6,17 @@ const bcrypt = require('bcrypt-nodejs');
 
 var ModelAkun = require('../models/akun');
 
+router.get('/profile', (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        res.redirect('/signin');
+    } else {
+        res.render('accounts/profile', {nama_user: req.user.local.nama});
+    }
+});
+
 router.get('/signin', function(req, res, next) {
     if (req.isAuthenticated()) {
-        res.redirect('/');
+        res.redirect('/profile');
     } else {
         res.render('accounts/login', { errorMessage: '' });
     }
@@ -16,7 +24,7 @@ router.get('/signin', function(req, res, next) {
 
 router.post('/signin', function(req, res, next) {
     passport.authenticate('local', {
-        successRedirect: '/',
+        successRedirect: '/profile',
         failureRedirect: '/signin'
     }, function(err, akun, info) {
         if (err) {
@@ -31,7 +39,7 @@ router.post('/signin', function(req, res, next) {
             if (err) {
                 return res.render('accounts/login', { errorMessage: err.message });
             } else {
-                return res.redirect('/');
+                return res.redirect('/profile');
             }
         });
     })(req, res, next);
@@ -39,7 +47,7 @@ router.post('/signin', function(req, res, next) {
 
 router.get('/signup', function(req, res, next) {
     if (req.isAuthenticated()) {
-        res.redirect('/');
+        res.redirect('/profile');
     } else {
         res.render('accounts/signup', { errorMessage: '' });
     }
@@ -77,7 +85,7 @@ router.post('/signup', function(req, res, next) {
 
 router.get('/signout', function(req, res, next) {
     if (!req.isAuthenticated()) {
-        res.redirect('/', { errorMessage: 'You are not logged in' });
+        res.redirect('/profile', { errorMessage: 'You are not logged in' });
     } else {
         req.logout();
         res.redirect('/signin');
