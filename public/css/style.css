@@ -1,17 +1,17 @@
 body.fix-nav {
-  padding-top: 50px;
-  padding-bottom: 20px;
+    padding-top: 50px;
+    padding-bottom: 20px;
 }
 
 .pad-top-20 {
-  padding-top: 20px;
+    padding-top: 20px;
 }
 
 .product-image {
-  width: 100%;
+    width: 100%;
 }
 
 #myModal .panel-title img {
-  margin-top: -13px !important;
-  /*margin-right: -17px !important;*/
+    margin-top: -13px !important;
+    /*margin-right: -17px !important;*/
 }

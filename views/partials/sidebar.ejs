@@ -1,0 +1,71 @@
+<div class="sidebar" data-color="orange">
+  <!-- Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow" -->
+  <div class="logo">
+    <a href="/" class="simple-text logo-mini">
+      KBM
+    </a>
+    <a href="/" class="simple-text logo-normal">
+      Kupon BBM
+    </a>
+  </div>
+  <div class="sidebar-wrapper">
+    <ul class="nav">
+      <li class="<%= active['dashboard'] %>">
+        <a href="/">
+          <i class="now-ui-icons business_chart-bar-32"></i>
+          <p>Dashboard</p>
+        </a>
+      </li>
+      <li class="<%= active['tukar_kupon'] %>">
+        <a href="/tukar_kupon">
+          <i class="fa fa-retweet"></i>
+          <p>Penukaran Kupon</p>
+        </a>
+      </li>
+      <li class="<%= active['tukar_uang'] %>">
+        <a href="/tukar_uang">
+          <i class="fa fa-money"></i>
+          <p>Penukaran Uang</p>
+        </a>
+      </li>
+      <li class="<%= active['jual'] %>">
+        <a href="/jual">
+          <i class="fa fa-shopping-basket"></i>
+          <p>Penjualan</p>
+        </a>
+      </li>
+      <li class="<%= active['kupon'] %>">
+        <a href="/kupon">
+          <i class="fa fa-tags"></i>
+          <p>Kupon</p>
+        </a>
+      </li>
+      <li class="<%= active['harga'] %>">
+        <a href="/harga">
+          <i class="fa fa-dollar"></i>
+          <p>Harga</p>
+        </a>
+      </li>
+      <li class="<%= active['bbm'] %>">
+        <a href="/bbm">
+          <i class="fa fa-tint"></i>
+          <p>BBM</p>
+        </a>
+      </li>
+      <li class="<%= active['instansi'] %>">
+        <a href="/instansi">
+          <i class="now-ui-icons business_bank"></i>
+          <p>Instansi</p>
+        </a>
+      </li>
+      <% if (akses_user == 'master') { %>
+      <li class="<%= active['akun'] %>">
+        <a href="/akun">
+          <i class="now-ui-icons users_single-02"></i>
+          <p>Akun</p>
+        </a>
+      </li>
+      <% } %>
+    </ul>
+  </div>
+</div>

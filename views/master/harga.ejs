@@ -1,0 +1,120 @@
+<% layout('layout') -%>
+<div class="panel-header panel-header-xs">
+</div>
+
+<div class="content">
+  <div class="row">
+
+    <div class="col-md-12">
+      <div class="card" id="card-tharga">
+        <div class="card-body">
+          <div id="alert-view"></div>
+          <table id="tharga" class="display" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>Kd</th>
+                <th>Berlaku</th>
+                <th>BBM</th>
+                <th>Harga</th>
+                <th>Dibuat</th>
+                <th>Oleh</th>
+                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="show_notif()"><i class="fa fa-plus"></i></button></th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>Kd</th>
+                <th>Berlaku</th>
+                <th>BBM</th>
+                <th>Harga</th>
+                <th>Dibuat</th>
+                <th>Oleh</th>
+                <th></th>
+              </tr>
+            </tfoot>
+            <tbody>
+              <% for (var i=0; i<harga.length; i++) { %>
+                <tr>
+                  <td><%= harga[i].kd %></td>
+                  <td><%= harga[i].s_berlaku %></td>
+                  <td><%= harga[i].nm_bbm %></td>
+                  <td><%= harga[i].harga %></td>
+                  <td><%= harga[i].s_dibuat %></td>
+                  <td><%= harga[i].nm_oleh %></td>
+                  <td>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= harga[i].kd %>', '<%= harga[i].harga %>', true)"><i class="fa fa-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= harga[i].kd %>', '<%= harga[i].harga %>')"><i class="fa fa-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="card-harga">
+        <div class="card-header">
+          <h5 class="title">Kelola Harga</h5>
+        </div>
+        <div class="card-body">
+          <div id="alert-input"></div>
+          <form id="form-harga" onsubmit="return simpan()">
+            <div class="row">
+              <div class="col-md-2 pr-1">
+                <div class="form-group">
+                  <label>Berlaku</label>
+                  <input type="hidden" name="kd" id="kd">
+                  <input type="text" class="form-control date-picker" value="10/05/2016" / data-datepicker-color="primary">
+                </div>
+              </div>
+              <div class="col-md-10 pl-1">
+                <div class="form-group">
+                  <label>Nama</label>
+                  <input type="text" class="form-control" placeholder="Nama Instansi" name="nama" id="nama" required>
+                </div>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-md-3">
+                <button type="submit" class="btn btn-primary btn-sm" onclick=""><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
+                <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    tharga = $('#tharga').DataTable({
+      columns: [
+        { data: 'kd', visible: false },
+        { data: 's_berlaku' },
+        { data: 'nm_bbm' },
+        { data: 'harga' },
+        { data: 's_dibuat' },
+        { data: 'nm_oleh' },
+        { data: 'tombol', className: 'text-right has-button', orderable: false }
+      ]
+    });
+
+    $('#datetimepicker1').datetimepicker();
+
+    $('#tharga tbody').on( 'click', 'div.btn-group', function () {
+      active_row = $(this).parents('tr');
+    });
+  });
+
+  //$('#card-harga').hide();
+  var tharga, active_row;
+
+  function show_notif() {
+    js_fun.show_notif('top','right', 'primary', 'warning', 'mess');
+  }
+</script>

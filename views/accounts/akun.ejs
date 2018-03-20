@@ -1,0 +1,219 @@
+<% layout('layout') -%>
+<div class="panel-header panel-header-xs">
+</div>
+
+<div class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card" id="card-takun">
+        <div class="card-body">
+          <div id="alert-view"></div>
+          <table id="takun" class="display" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>Kd</th>
+                <th>NIP</th>
+                <th>Nama</th>
+                <th>Akses</th>
+                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="clearInput('', '', '', '', true)"><i class="fa fa-plus"></i></button></th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>Kd</th>
+                <th>NIP</th>
+                <th>Nama</th>
+                <th>Akses</th>
+                <th></th>
+              </tr>
+            </tfoot>
+            <tbody>
+              <% for (var i=0; i<akun.length; i++) { %>
+                <tr>
+                  <td><%= akun[i].kd %></td>
+                  <td><%= akun[i].nip %></td>
+                  <td><%= akun[i].nama %></td>
+                  <td><%= akun[i].akses %></td>
+                  <td>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= akun[i].kd %>', '<%= akun[i].nip %>', '<%= akun[i].nama %>', '<%= akun[i].akses %>', true)"><i class="fa fa-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= akun[i].nip %>', '<%= akun[i].nama %>')"><i class="fa fa-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="card-akun">
+        <div class="card-header">
+          <h5 class="title">Kelola Akun</h5>
+        </div>
+        <div class="card-body">
+          <div id="alert-input"></div>
+          <form id="form-akun" onsubmit="return simpan()">
+            <div class="row">
+              <div class="col-md-3 pr-1">
+                <div class="form-group">
+                  <label>NIP</label>
+                  <input type="hidden" name="kd" id="kd">
+                  <input type="hidden" name="onip" id="onip">
+                  <input type="text" class="form-control" placeholder="NIP" name="nip" id="nip" required>
+                </div>
+              </div>
+              <div class="col-md-6 px-1">
+                <div class="form-group">
+                  <label>Nama</label>
+                  <input type="text" class="form-control" placeholder="Nama Pegawai" name="nama" id="nama" required>
+                </div>
+              </div>
+              <div class="col-md-3 pl-1">
+                <div class="form-group">
+                  <label>Akses</label>
+                  <select class="form-control" id="akses" name="akses" required>
+                    <option value="manajer">Manajer</option>
+                    <option value="kasir">Kasir</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3 pr-1">
+                <div class="form-group">
+                  <label>Password</label>
+                  <input type="password" class="form-control" placeholder="Bawaan 123456" name="pass_baru" id="pass_baru">
+                </div>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-md-3">
+                <button type="submit" class="btn btn-primary btn-sm" onclick=""><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
+                <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', '', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    takun = $('#takun').DataTable({
+      columns: [
+        { data: 'kd', 'visible': false },
+        { data: 'nip' },
+        { data: 'nama' },
+        { data: 'akses' },
+        { data: 'tombol', className: 'text-right has-button', orderable: false }
+      ]
+    });
+
+    $('#takun tbody').on( 'click', 'div.btn-group', function () {
+      active_row = $(this).parents('tr');
+    });
+  });
+
+  $('#card-akun').hide();
+  var takun, active_row;
+
+  function clearInput(kd, nip, nama, akses, show) {
+    if (show) {
+      $('#card-takun').slideUp('fast', function() {
+        $('#card-akun').slideDown('fast');
+      });
+    } else {
+      $('#card-akun').slideUp('fast', function() {
+        $('#card-takun').slideDown('fast');
+      });
+    }
+    
+    $('#kd').val(kd);
+    $('#onip').val(nip);
+    $('#nip').val(nip);
+    $('#nama').val(nama);
+    $('#nip').focus();
+    $('#akses').val(akses);
+    $('#pass_baru').val('');
+    $('#pass_baru').attr('placeholder', nip == '' ? 'Bawaan 123456' : 'Isi Untuk Ubah');
+  }
+
+  function simpan() {
+    $('#card-akun .card-body').LoadingOverlay('show');
+    $.ajax({
+      type: 'POST',
+      url: '/akun',
+      data: $('#form-akun').serialize()
+    }).done(function(data) {
+      if (data.res == 'SUKSES') {
+        if (data.op == 'BARU') {
+          //js_fun.show_alert('#alert-input', '<strong>Sukses!</strong> Akun baru telah berhasil tersimpan.', 'success');
+          js_fun.show_notif('top','right', 'success', 'smile', 'Akun baru telah berhasil tersimpan.');
+        } else {
+          js_fun.show_notif('top','right', 'success', 'smile', 'Akun telah berhasil dirubah.');
+        }
+      } else if (data.res == 'KODE') {
+        js_fun.show_notif('top','right', 'warning', 'warning', 'NIP telah digunakan.');
+      } else {
+        js_fun.show_notif('top','right', 'warning', 'warning', 'Koneksi bermasalah.');
+      }
+
+      if (data.res == 'SUKSES') {
+        reloadTampilan(data.op, (data.op == 'BARU' ? data.kd : $('#kd').val()));
+      }
+    }).fail(function (jqXHR, textStatus) {
+      if(confirm('Simpan data gagal, coba lagi?')){ simpan(); }
+    }).always(function () {
+      $('#card-akun .card-body').LoadingOverlay('hide', true);
+    });
+    return false;
+  }
+
+  function hapus(nip, nama) {
+    if(confirm('Yakin ingin menghapus akun milik '+nama+' ?')){
+      $('#card-takun .card-body').LoadingOverlay('show');
+      jQuery.ajax({
+        type: 'DELETE',
+        url: '/akun',
+        data: { nip: nip }
+      }).done(function(data) {
+        if (data.res == 'SUKSES') {
+          takun.row(active_row).remove().draw();
+          active_row = null;
+          js_fun.show_notif('top','right', 'success', 'smile', 'Akun berhasil dihapus.');
+        } else if (data.res == 'AKTIF') {
+          js_fun.show_notif('top','right', 'warning', 'warning', 'Tidak dapat menghapus akun Anda sendiri.');
+        } else { js_fun.show_notif('top','right', 'warning', 'warning', 'Akun gagal dihapus.'); }
+      }).fail(function (jqXHR, textStatus) {
+        if(confirm('Hapus data gagal, coba lagi?')){ hapus(kd, nama); }
+      }).always(function () {
+        $('#card-takun .card-body').LoadingOverlay('hide', true);
+      });
+    }
+  }
+
+  function reloadTampilan(op, kd) {
+    var nip = $('#nip').val(), nama = $('#nama').val(), akses = $('#akses').val();
+    var data = {
+      kd      : kd,
+      nip     : nip,
+      nama    : nama,
+      akses   : akses,
+      tombol  : `<div class="btn-group">
+        <button type="button" class="btn btn-sm btn-info" onclick="clearInput('`+kd+`', '`+nip+`', '`+nama+`', '`+akses+`', true)"><i class="fa fa-pencil"></i></button>
+        <button type="button" class="btn btn-sm btn-warning" onclick="hapus('`+nip+`', '`+nama+`')"><i class="fa fa-trash"></i></button>
+      </div>`
+    };
+    
+    if(op=='UBAH'){ takun.row(active_row).remove().draw(); }
+    takun.row.add(data).draw();
+    active_row = null;
+
+    setTimeout(function(){
+      clearInput('', '', '', '', false);
+      $('#alert-input').html('');
+    }, 1000);
+  }
+</script>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title><%= judul %> - Kupon BBM</title>
+</head>
+
+<!--     Fonts and icons     -->
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<!-- CSS Files -->
+<link href="/now-ui-kit/css/bootstrap.min.css" rel="stylesheet" />
+<link href="/now-ui/css/now-ui-dashboard.css?v=1.0.1" rel="stylesheet" />
+<!-- NOW UI Kit -->
+<link href="/now-ui-kit/css/now-ui-kit.css?v=1.1.0" rel="stylesheet" />
+<!-- CSS Just for demo purpose, don't include it in your project -->
+<link href="/now-ui/demo/demo.css" rel="stylesheet" />
+<link href="/css/style2.css" rel="stylesheet" />
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<% if (typeof datatables !== 'undefined') { %>
+  <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<% } %>
+
+<% if (typeof loadingoverlay !== 'undefined') { %>
+  <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@1.6.0/src/loadingoverlay.min.js"></script>
+<% } %>
+
+<% if (typeof datetimepicker !== 'undefined') { %>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/locale/id.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<% } %>
+  
+<body class="fix-nav">
+
+  <div class="wrapper ">
+    <% include ./partials/sidebar %>
+
+    <div class="main-panel">
+      <% include ./partials/navbar %>
+
+      <%- body -%>
+    </div>
+  </div>
+
+  <!--   Core JS Files   -->
+  <script src="/now-ui/js/core/popper.min.js"></script>
+  <script src="/now-ui-kit/js/core/bootstrap.min.js"></script>
+  <script src="/now-ui/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+  <!--  Google Maps Plugin    -->
+  <!--<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>-->
+  <!-- Chart JS -->
+  <script src="/now-ui/js/plugins/chartjs.min.js"></script>
+  <!--  Notifications Plugin    -->
+  <script src="/now-ui/js/plugins/bootstrap-notify.js"></script>
+  <!--  Plugin for the DatePicker, full documentation here: https://github.com/uxsolutions/bootstrap-datepicker -->
+  <script src="/now-ui-kit/js/plugins/bootstrap-datepicker.js" type="text/javascript"></script>
+  <!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="/now-ui/js/now-ui-dashboard.js?v=1.0.1"></script>
+  <!-- Control Center for Now Ui Kit: parallax effects, scripts for the example pages etc -->
+  <script src="/now-ui-kit/js/now-ui-kit.js?v=1.1.0" type="text/javascript"></script>
+  <!-- Now Ui Dashboard DEMO methods, don't include it in your project! -->
+  <script src="/now-ui/demo/demo.js"></script>
+  <script src="/js/script.js"></script>
+</body>
+
+</html>

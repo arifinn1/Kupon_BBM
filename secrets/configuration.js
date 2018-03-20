@@ -1,3 +1,7 @@
+function clearArray(arr) {
+  for (var cell in arr){ arr[cell] = ""; }
+}
+
 module.exports = {
   database: {
     user: 'postgres',
@@ -6,5 +10,18 @@ module.exports = {
     password: 'arifin',
     port: 5432
   },
-  secretKey: 'arifin123'
+  secretKey: 'arifin123',
+  active: {
+    dashboard   : '',
+    instansi    : '',
+    profile     : '',
+    akun        : '',
+    bbm         : '',
+    harga       : '',
+    kupon       : '',
+    jual        : '',
+    tukar_uang  : '',
+    tukar_kupon : ''
+  },
+  clearArray: clearArray
 };
