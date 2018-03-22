@@ -1,23 +1,27 @@
 <% layout('layout') -%>
-<div class="panel-header panel-header-xs">
-</div>
 
-<div class="content">
+<section class="content">
   <div class="row">
-    <div class="col-md-12">
-      <div class="card" id="card-tbbm">
-        <div class="card-body">
+    <div class="col-xs-12">
+
+      <div class="box" id="box-tbbm">
+        <div class="box-header">
+          <h3 class="box-title">Data BBM</h3>
+        </div>
+        <div class="box-body">
           <div id="alert-view"></div>
           <table id="tbbm" class="display" cellspacing="0" width="100%">
             <thead>
               <tr>
-                <th>Nama Bahan Bakar</th>
-                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="clearInput('', '', true)"><i class="fa fa-plus"></i></button></th>
+                <th>Nama</th>
+                <th>Warna BG</th>
+                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="clearInput('', '', '', true)"><i class="fa fa-plus"></i></button></th>
               </tr>
             </thead>
             <tfoot>
               <tr>
-                <th>Nama Bahan Bakar</th>
+                <th>Nama</th>
+                <th>Warna BG</th>
                 <th></th>
               </tr>
             </tfoot>
@@ -25,9 +29,10 @@
               <% for (var i=0; i<bbm.length; i++) { %>
                 <tr>
                   <td><%= bbm[i].nama %></td>
+                  <td><%= bbm[i].warna_bg %></td>
                   <td>
                     <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= bbm[i].kd %>', '<%= bbm[i].nama %>', true)"><i class="fa fa-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= bbm[i].kd %>', '<%= bbm[i].nama %>', '<%= bbm[i].warna_bg %>', true)"><i class="fa fa-pencil"></i></button>
                       <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= bbm[i].kd %>', '<%= bbm[i].nama %>')"><i class="fa fa-trash"></i></button>
                     </div>
                   </td>
@@ -38,30 +43,39 @@
         </div>
       </div>
 
-      <div class="card" id="card-bbm">
-        <div class="card-header">
-          <h5 class="title">Kelola BBM</h5>
+      <div class="box" id="box-bbm">
+        <div class="box-header">
+          <h3 class="box-title">Kelola BBM</h3>
         </div>
-        <div class="card-body">
+        <div class="box-body">
           <div id="alert-input"></div>
           <form id="form-bbm" onsubmit="return simpan()">
             <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-6">
                 <div class="form-group">
                   <label>Nama</label>
                   <input type="hidden" name="kd" id="kd">
+                  <input type="hidden" name="onama" id="onama">
                   <input type="text" class="form-control" placeholder="Nama Bahan Bakar" name="nama" id="nama" required>
                 </div>
               </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-md-3">
-                <button type="submit" class="btn btn-primary btn-sm" onclick=""><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
-                <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
+
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label id="lb-bg">Warna Background</label>
+                  <select class="form-control" id="warna_bg" name="warna_bg" required>
+                    <% for (var i=0; i<warna.length; i++) { %>
+                      <option value="<%= warna[i] %>"><%= warna[i] %></option>
+                    <% } %>
+                  </select>
+                </div>
               </div>
-            </div>
+            </div>              
           </form>
+        </div>
+        <div class="box-footer">
+          <button type="submit" class="btn btn-primary btn-sm" onclick="$('#form-bbm').submit()"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
+          <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
         </div>
       </div>
     </div>
@@ -73,6 +87,7 @@
     tbbm = $('#tbbm').DataTable({
       columns: [
         { data: 'nama' },
+        { data: 'warna_bg' },
         { data: 'tombol', className: 'text-right has-button', orderable: false }
       ]
     });
@@ -80,29 +95,36 @@
     $('#tbbm tbody').on( 'click', 'div.btn-group', function () {
       active_row = $(this).parents('tr');
     });
+
+    $('#warna_bg').change(function() {
+      $('#lb-bg').attr('class', 'bg-'+$(this).val());
+    });
   });
 
-  $('#card-bbm').hide();
+  $('#box-bbm').hide();
   var tbbm, active_row;
 
-  function clearInput(kd, nama, show) {
+  function clearInput(kd, nama, warna, show) {
     if (show) {
-      $('#card-tbbm').slideUp('fast', function() {
-        $('#card-bbm').slideDown('fast');
+      $('#box-tbbm').slideUp('fast', function() {
+        $('#box-bbm').slideDown('fast');
       });
     } else {
-      $('#card-bbm').slideUp('fast', function() {
-        $('#card-tbbm').slideDown('fast');
+      $('#box-bbm').slideUp('fast', function() {
+        $('#box-tbbm').slideDown('fast');
       });
     }
     
     $('#kd').val(kd);
+    $('#onama').val(nama);
     $('#nama').val(nama);
+    $('#warna_bg').val(warna);
+    $('#lb-bg').attr('class', 'bg-'+warna);
     $('#nama').focus();
   }
 
   function simpan() {
-    $("#card-bbm .card-body").LoadingOverlay("show");
+    $("#box-bbm").LoadingOverlay("show");
     $.ajax({
       type: 'POST',
       url: '/bbm',
@@ -110,14 +132,14 @@
     }).done(function(data) {
       if (data.res == 'SUKSES') {
         if (data.op == 'BARU') {
-          js_fun.show_alert("#alert-input","<strong>Sukses!</strong> Data baru telah berhasil tersimpan.", "success");
+          js_fun.show_notif("<strong>Sukses!</strong> Data baru telah berhasil tersimpan.", "success");
         } else {
-          js_fun.show_alert("#alert-input","<strong>Sukses!</strong> Data telah berhasil dirubah.", "success");
+          js_fun.show_notif("<strong>Sukses!</strong> Data telah berhasil dirubah.", "success");
         }
       } else if (data.res == 'NAMA') {
-        js_fun.show_alert("#alert-input","<strong>Gagal!</strong> Nama bahan bakar telah digunakan.", "warning");
+        js_fun.show_notif("<strong>Gagal!</strong> Nama bahan bakar telah digunakan.", "warning");
       } else {
-        js_fun.show_alert("#alert-input","<strong>Gagal!</strong> Koneksi bermasalah.", "warning");
+        js_fun.show_notif("<strong>Gagal!</strong> Koneksi bermasalah.", "warning");
       }
 
       if (data.res == 'SUKSES') {
@@ -126,14 +148,14 @@
     }).fail(function (jqXHR, textStatus) {
       if(confirm('Simpan data gagal, coba lagi?')){ simpan(); }
     }).always(function () {
-      $('#card-bbm .card-body').LoadingOverlay('hide', true);
+      $('#box-bbm').LoadingOverlay('hide', true);
     });
     return false;
   }
 
   function hapus(kd, nama) {
     if(confirm('Yakin ingin menghapus '+nama+' ?')){
-      $('#card-tbbm .card-body').LoadingOverlay('show');
+      $('#box-tbbm .box-body').LoadingOverlay('show');
       jQuery.ajax({
         type: 'DELETE',
         url: '/bbm',
@@ -142,22 +164,23 @@
         if (data.res == 'SUKSES') {
           tbbm.row(active_row).remove().draw();
           active_row = null;
-          js_fun.show_alert('#alert-view', '<strong>Sukses!</strong> Data berhasil dihapus.', 'success');
-        }else{ js_fun.show_alert('#alert-view', '<strong>Gagal!</strong> Data gagal dihapus.', 'warning'); }
+          js_fun.show_notif('<strong>Sukses!</strong> Data berhasil dihapus.', 'success');
+        }else{ js_fun.show_notif('<strong>Gagal!</strong> Data gagal dihapus.', 'warning'); }
       }).fail(function (jqXHR, textStatus) {
         if(confirm('Hapus data gagal, coba lagi?')){ hapus(kd, nama); }
       }).always(function () {
-        $('#card-tbbm .card-body').LoadingOverlay('hide', true);
+        $('#box-tbbm .box-body').LoadingOverlay('hide', true);
       });
     }
   }
 
   function reloadTampilan(op, kd) {
-    var nama = $('#nama').val();
+    var nama = $('#nama').val(), warna = $('#warna_bg').val();
     var data = {
       nama    : nama,
+      warna_bg    : warna,
       tombol  : `<div class="btn-group">
-        <button type="button" class="btn btn-sm btn-info" onclick="clearInput('`+kd+`', '`+nama+`', true)"><i class="fa fa-pencil"></i></button>
+        <button type="button" class="btn btn-sm btn-info" onclick="clearInput('`+kd+`', '`+nama+`', '`+warna+`', true)"><i class="fa fa-pencil"></i></button>
         <button type="button" class="btn btn-sm btn-warning" onclick="hapus('`+kd+`', '`+nama+`')"><i class="fa fa-trash"></i></button>
       </div>`
     };
@@ -166,9 +189,7 @@
     tbbm.row.add(data).draw();
     active_row = null;
 
-    setTimeout(function(){
-      clearInput('', '', false);
-      $('#alert-input').html('');
-    }, 1000);
+    clearInput('', '', false);
+    $('#alert-input').html('');
   }
 </script>

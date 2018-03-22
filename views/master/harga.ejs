@@ -1,13 +1,26 @@
 <% layout('layout') -%>
-<div class="panel-header panel-header-xs">
-</div>
 
-<div class="content">
+<section class="content">
   <div class="row">
+    <% for (var i=0; i<c_harga.length; i++) { %>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-<%= c_harga[i].warna_bg %>"><i class="fa fa-tint"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text"><%= c_harga[i].nama %></span>
+            <span class="info-box-number info-box-big"><%= c_harga[i].harga %></span>
+          </div>
+        </div>
+      </div>
+    <% } %>
 
-    <div class="col-md-12">
-      <div class="card" id="card-tharga">
-        <div class="card-body">
+    <div class="col-xs-12">
+
+      <div class="box" id="box-tharga">
+        <div class="box-header">
+          <h3 class="box-title">Data Harga</h3>
+        </div>
+        <div class="box-body">
           <div id="alert-view"></div>
           <table id="tharga" class="display" cellspacing="0" width="100%">
             <thead>
@@ -18,7 +31,7 @@
                 <th>Harga</th>
                 <th>Dibuat</th>
                 <th>Oleh</th>
-                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="show_notif()"><i class="fa fa-plus"></i></button></th>
+                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="clearInput('', new Date(), '', '', '', '', true)"><i class="fa fa-plus"></i></button></th>
               </tr>
             </thead>
             <tfoot>
@@ -43,8 +56,8 @@
                   <td><%= harga[i].nm_oleh %></td>
                   <td>
                     <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= harga[i].kd %>', '<%= harga[i].harga %>', true)"><i class="fa fa-pencil"></i></button>
-                      <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= harga[i].kd %>', '<%= harga[i].harga %>')"><i class="fa fa-trash"></i></button>
+                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= harga[i].kd %>', new Date('<%= harga[i].berlaku %>'), '<%= harga[i].kd_bbm %>', '<%= harga[i].harga %>', '<%= harga[i].s_dibuat %>', '<%= harga[i].nm_oleh %>', true)"><i class="fa fa-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= harga[i].kd %>', '<%= harga[i].s_berlaku %>', '<%= harga[i].nm_bbm %>', '<%= harga[i].harga %>')"><i class="fa fa-trash"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -54,36 +67,59 @@
         </div>
       </div>
 
-      <div class="card" id="card-harga">
-        <div class="card-header">
-          <h5 class="title">Kelola Harga</h5>
+      <div class="box" id="box-harga">
+        <div class="box-header">
+          <h3 class="box-title">Kelola Harga</h3>
         </div>
-        <div class="card-body">
+        <div class="box-body">
           <div id="alert-input"></div>
           <form id="form-harga" onsubmit="return simpan()">
             <div class="row">
-              <div class="col-md-2 pr-1">
+
+              <div class="col-md-3">
                 <div class="form-group">
                   <label>Berlaku</label>
                   <input type="hidden" name="kd" id="kd">
-                  <input type="text" class="form-control date-picker" value="10/05/2016" / data-datepicker-color="primary">
+                  <div class="input-group date" id="berlaku">
+                    <input type="text" class="form-control" name="berlaku" readonly/>
+                    <span class="input-group-addon">
+                      <i class="fa fa-calendar"></i>
+                    </span>
+                  </div>
                 </div>
               </div>
-              <div class="col-md-10 pl-1">
-                <div class="form-group">
-                  <label>Nama</label>
-                  <input type="text" class="form-control" placeholder="Nama Instansi" name="nama" id="nama" required>
-                </div>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
+
               <div class="col-md-3">
-                <button type="submit" class="btn btn-primary btn-sm" onclick=""><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
-                <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
+                <div class="form-group">
+                  <label>BBM</label>
+                  <select class="form-control" id="kd_bbm" name="kd_bbm" required>
+                    <% for (var i=0; i<c_harga.length; i++) { %>
+                      <option value="<%= c_harga[i].kd %>"><%= c_harga[i].nama %></option>
+                    <% } %>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>Harga</label>
+                  <input type="number" class="form-control" placeholder="Harga" name="harga" id="harga" required>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Dibuat, Oleh</label>
+                  <p><span id="txt-dibuat">...</span>, <span id="txt-oleh">...</span></p>
+                </div>
               </div>
             </div>
           </form>
+        </div>
+
+        <div class="box-footer">
+          <button type="submit" class="btn btn-primary btn-sm" onclick="$('#form-harga').submit()"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
+          <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', new Date(), '', '', '', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
         </div>
       </div>
     </div>
@@ -101,20 +137,116 @@
         { data: 's_dibuat' },
         { data: 'nm_oleh' },
         { data: 'tombol', className: 'text-right has-button', orderable: false }
-      ]
+      ],
+      order: [[ 1, "desc" ]]
     });
 
-    $('#datetimepicker1').datetimepicker();
+    $('#berlaku').datetimepicker({
+			viewMode: 'days',
+			format: 'DD MMM YYYY - HH:mm',
+			date: new Date(),
+			ignoreReadonly: true
+		});
 
     $('#tharga tbody').on( 'click', 'div.btn-group', function () {
       active_row = $(this).parents('tr');
     });
   });
 
-  //$('#card-harga').hide();
+  $('#box-harga').hide();
   var tharga, active_row;
 
-  function show_notif() {
-    js_fun.show_notif('top','right', 'primary', 'warning', 'mess');
+  function clearInput(kd, berlaku, kd_bbm, harga, dibuat, oleh, show) {
+    if (show) {
+      $('#box-tharga').slideUp('fast', function() {
+        $('#box-harga').slideDown('fast');
+      });
+    } else {
+      $('#box-harga').slideUp('fast', function() {
+        $('#box-tharga').slideDown('fast');
+      });
+    }
+    
+    $('#kd').val(kd);
+    $('#berlaku').data("DateTimePicker").date(berlaku);
+    $('#kd_bbm').val(kd_bbm);
+    $('#harga').val(harga);
+
+    $('#txt-dibuat').html(dibuat);
+    $('#txt-oleh').html(oleh);
+
+    $('#harga').focus();
+  }
+
+  function simpan() {
+    $('#berlaku').data('DateTimePicker').format('YYYY-MM-DD HH:mm:ss');
+    $("#box-harga").LoadingOverlay('show');
+    $.ajax({
+      type: 'POST',
+      url: '/harga',
+      data: $('#form-harga').serialize()
+    }).done(function(data) {
+      $('#berlaku').data('DateTimePicker').format('DD MMM YYYY - HH:mm');
+      if (data.res == 'SUKSES') {
+        if (data.op == 'BARU') {
+          js_fun.show_notif('<strong>Sukses!</strong> Data baru telah berhasil tersimpan.', 'success');
+        } else {
+          js_fun.show_notif('<strong>Sukses!</strong> Data telah berhasil dirubah.', 'success');
+        }
+      } else {
+        js_fun.show_notif('<strong>Gagal!</strong> Koneksi bermasalah.', 'warning');
+      }
+
+      if (data.res == 'SUKSES') {
+        reloadTampilan(data.op, data.data);
+      }
+    }).fail(function (jqXHR, textStatus) {
+      if(confirm('Simpan data gagal, coba lagi?')){ simpan(); }
+    }).always(function () {
+      $('#box-harga').LoadingOverlay('hide', true);
+    });
+    return false;
+  }
+
+  function hapus(kd, berlaku, bbm, harga) {
+    if(confirm('Yakin ingin menghapus perubahan harga '+bbm+' pada '+berlaku+' sejumlah '+harga+' rupiah ?')){
+      $('#box-tharga .box-body').LoadingOverlay('show');
+      jQuery.ajax({
+        type: 'DELETE',
+        url: '/harga',
+        data: { kd: kd }
+      }).done(function(data) {
+        if (data.res == 'SUKSES') {
+          tharga.row(active_row).remove().draw();
+          active_row = null;
+          js_fun.show_notif('<strong>Sukses!</strong> Data berhasil dihapus.', 'success');
+        }else{ js_fun.show_notif('<strong>Gagal!</strong> Data gagal dihapus.', 'warning'); }
+      }).fail(function (jqXHR, textStatus) {
+        if(confirm('Hapus data gagal, coba lagi?')){ hapus(kd, berlaku, bbm, harga); }
+      }).always(function () {
+        $('#box-tharga .box-body').LoadingOverlay('hide', true);
+      });
+    }
+  }
+
+  function reloadTampilan(op, data) {
+    var data = {
+      kd        : data.kd,
+      s_berlaku : data.s_berlaku,
+      nm_bbm    : data.nm_bbm,
+      harga     : data.harga,
+      s_dibuat  : data.s_dibuat,
+      nm_oleh   : data.nm_oleh,
+      tombol    : `<div class="btn-group">
+        <button type="button" class="btn btn-sm btn-info" onclick="clearInput('`+data.kd+`', new Date('`+data.berlaku+`'), '`+data.kd_bbm+`', '`+data.harga+`', '`+data.s_dibuat+`', '`+data.nm_oleh+`', true)"><i class="fa fa-pencil"></i></button>
+        <button type="button" class="btn btn-sm btn-warning" onclick="hapus('`+data.kd+`', '`+data.s_berlaku+`', '`+data.nm_bbm+`', '`+data.harga+`')"><i class="fa fa-trash"></i></button>
+      </div>`
+    };
+    
+    if(op=='UBAH'){ tharga.row(active_row).remove().draw(); }
+    tharga.row.add(data).draw();
+    active_row = null;
+
+    clearInput('', new Date(), '', '', '', '', false);
   }
 </script>

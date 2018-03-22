@@ -1,12 +1,14 @@
 <% layout('layout') -%>
-<div class="panel-header panel-header-xs">
-</div>
 
-<div class="content">
+<section class="content">
   <div class="row">
-    <div class="col-md-12">
-      <div class="card" id="card-tinstansi">
-        <div class="card-body">
+    <div class="col-xs-12">
+
+      <div class="box" id="box-tinstansi">
+        <div class="box-header">
+          <h3 class="box-title">Data Instansi</h3>
+        </div>
+        <div class="box-body">
           <div id="alert-view"></div>
           <table id="tinstansi" class="display" cellspacing="0" width="100%">
             <thead>
@@ -41,11 +43,11 @@
         </div>
       </div>
       
-      <div class="card" id="card-instansi">
-        <div class="card-header">
-          <h5 class="title">Kelola Instansi</h5>
+      <div class="box" id="box-instansi">
+        <div class="box-header">
+          <h3 class="box-title">Kelola Instansi</h3>
         </div>
-        <div class="card-body">
+        <div class="box-body">
           <div id="alert-input"></div>
           <form id="form-instansi" onsubmit="return simpan()">
             <div class="row">
@@ -63,14 +65,12 @@
                 </div>
               </div>
             </div>
-            <hr>
-            <div class="row">
-              <div class="col-md-3">
-                <button type="submit" class="btn btn-primary btn-sm" onclick=""><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
-                <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
-              </div>
-            </div>
           </form>
+        </div>
+
+        <div class="box-footer">
+          <button type="submit" class="btn btn-primary btn-sm" onclick="$('#form-instansi').submit()"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
+          <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
         </div>
       </div>
     </div>
@@ -92,37 +92,39 @@
     });
   });
 
-  $('#card-instansi').hide();
+  $('#box-instansi').hide();
   var tinstansi, active_row;
 
   function clearInput(dc, nama, show) {
     if (show) {
-      $('#card-tinstansi').slideUp('fast', function() {
-        $('#card-instansi').slideDown('fast');
+      $('#box-tinstansi').slideUp('fast', function() {
+        $('#box-instansi').slideDown('fast');
+        
+        if (dc=='') {
+          $("#box-instansi").LoadingOverlay("show");
+          $.ajax({
+            type      : 'GET',
+            url       : '/instansi/kodeGen'
+          }).done(function(kode) {
+            $('#dc').val(kode);
+            $("#box-instansi").LoadingOverlay("hide", true);
+          });
+        } else { $('#dc').val(dc); }
       });
     } else {
-      $('#card-instansi').slideUp('fast', function() {
-        $('#card-tinstansi').slideDown('fast');
+      $('#box-instansi').slideUp('fast', function() {
+        $('#dc').val(dc);
+        $('#box-tinstansi').slideDown('fast');
       });
     }
     
     $('#odc').val(dc);
     $('#nama').val(nama);
     $('#nama').focus();
-    if (dc=='' && show) {
-      $("#card-instansi .card-body").LoadingOverlay("show");
-      $.ajax({
-        type      : 'GET',
-        url       : '/instansi/kodeGen'
-      }).done(function(kode) {
-        $('#dc').val(kode);
-        $("#card-instansi .card-body").LoadingOverlay("hide", true);
-      });
-    } else { $('#dc').val(dc); }
   }
 
   function simpan() {
-    $("#card-instansi .card-body").LoadingOverlay("show");
+    $("#box-instansi").LoadingOverlay("show");
     $.ajax({
       type: 'POST',
       url: '/instansi',
@@ -130,14 +132,14 @@
     }).done(function(data) {
       if (data.res == 'SUKSES') {
         if (data.op == 'BARU') {
-          js_fun.show_notif('top','right', 'success', 'smile', 'Data baru telah berhasil tersimpan.');
+          js_fun.show_notif('<strong>Sukses!</strong> Data baru telah berhasil tersimpan.', 'success');
         } else {
-          js_fun.show_notif('top','right', 'success', 'smile', 'Data telah berhasil dirubah.');
+          js_fun.show_notif('<strong>Sukses!</strong> Data telah berhasil dirubah.', 'success');
         }
       } else if (data.res == 'KODE') {
-        js_fun.show_alert("#alert-input","<strong>Gagal!</strong> Kode instansi telah digunakan.", "warning");
+        js_fun.show_notif('<strong>Gagal!</strong> Kode instansi telah digunakan.', 'warning');
       } else {
-        js_fun.show_alert("#alert-input","<strong>Gagal!</strong> Koneksi bermasalah.", "warning");
+        js_fun.show_notif('<strong>Gagal!</strong> Koneksi bermasalah.', 'warning');
       }
 
       if (data.res == 'SUKSES') {
@@ -146,14 +148,14 @@
     }).fail(function (jqXHR, textStatus) {
       if(confirm('Simpan data gagal, coba lagi?')){ simpan(); }
     }).always(function () {
-      $('#card-instansi .card-body').LoadingOverlay('hide', true);
+      $('#box-instansi').LoadingOverlay('hide', true);
     });
     return false;
   }
 
   function hapus(dc, nama) {
     if(confirm('Yakin ingin menghapus '+nama+' ?')){
-      $('#card-tinstansi .card-body').LoadingOverlay('show');
+      $('#box-tinstansi .box-body').LoadingOverlay('show');
       jQuery.ajax({
         type: 'DELETE',
         url: '/instansi',
@@ -162,12 +164,12 @@
         if (data.res == 'SUKSES') {
           tinstansi.row(active_row).remove().draw();
           active_row = null;
-          js_fun.show_alert('#alert-view', '<strong>Sukses!</strong> Data berhasil dihapus.', 'success');
-        }else{ js_fun.show_alert('#alert-view', '<strong>Gagal!</strong> Data gagal dihapus.', 'warning'); }
+          js_fun.show_notif('<strong>Sukses!</strong> Data berhasil dihapus.', 'success');
+        }else{ js_fun.show_notif('<strong>Gagal!</strong> Data gagal dihapus.', 'warning'); }
       }).fail(function (jqXHR, textStatus) {
         if(confirm('Hapus data gagal, coba lagi?')){ hapus(dc, nama); }
       }).always(function () {
-        $('#card-tinstansi .card-body').LoadingOverlay('hide', true);
+        $('#box-tinstansi .box-body').LoadingOverlay('hide', true);
       });
     }
   }
@@ -187,9 +189,7 @@
     tinstansi.row.add(data).draw();
     active_row = null;
 
-    setTimeout(function(){
-      clearInput('', '', false);
-      $('#alert-input').html('');
-    }, 1000);
+    clearInput('', '', false);
+    $('#alert-input').html('');
   }
 </script>

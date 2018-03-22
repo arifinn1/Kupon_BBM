@@ -1,17 +1,15 @@
-body.fix-nav {
-    padding-top: 50px;
-    padding-bottom: 20px;
+table tbody button, table th>button {
+  margin: 0 !important;
 }
 
-.pad-top-20 {
-    padding-top: 20px;
+table tbody td.has-button, table th.has-button {
+  padding: 4px 10px !important;
 }
 
-.product-image {
-    width: 100%;
+.form-group p {
+  margin-top: 6px !important;
 }
 
-#myModal .panel-title img {
-    margin-top: -13px !important;
-    /*margin-right: -17px !important;*/
+.info-box-big {
+  font-size: 27pt !important;
 }

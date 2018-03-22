@@ -20,10 +20,11 @@ router.get('/akun', (req, res, next) => {
       res.render('accounts/akun', {
         judul           : 'AKUN',
         nama_user       : req.user.local.nama,
-        akses_user       : req.user.local.akses,
+        akses_user      : req.user.local.akses,
         active          : config.active,
         datatables      : true,
         loadingoverlay  : true,
+        datetimepicker  : true,
         akun            : data.rows
       });
     });

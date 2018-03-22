@@ -11,6 +11,7 @@
   "author": "Arifin",
   "license": "ISC",
   "dependencies": {
+    "admin-lte": "^2.4.3",
     "async": "^2.6.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",

@@ -1,25 +1,3 @@
-$(document).ready(function () {
-  $('.date-picker').each(function () {
-    $(this).datepicker({
-      templates: {
-        leftArrow: '<i class="now-ui-icons arrows-1_minimal-left"></i>',
-        rightArrow: '<i class="now-ui-icons arrows-1_minimal-right"></i>'
-      }
-    }).on('show', function () {
-      $('.datepicker').addClass('open');
-
-      datepicker_color = $(this).data('datepicker-color');
-      if (datepicker_color.length != 0) {
-        $('.datepicker').addClass('datepicker-' + datepicker_color + '');
-      }
-    }).on('hide', function () {
-      $('.datepicker').removeClass('open');
-    }).on('changeDate', function(e){ 
-      $(this).parent('.label-floating').removeClass('is-empty'); 
-    });
-  });
-});
-
 js_fun = {
   show_alert: function (id, pesan, alert) {
     $(id).hide();
@@ -27,23 +5,17 @@ js_fun = {
     $(id).show('slow');
   },
 
-  show_notif: function (from, align, color, icon, message) {
-    if (icon == 'bell') icon = 'now-ui-icons ui-1_bell-53';
-    else if (icon == 'idea') icon = 'now-ui-icons business_bulb-63';
-    else if (icon == 'smile') icon = 'now-ui-icons emoticons_satisfied';
-    else if (icon == 'warning') icon = 'now-ui-icons media-2_sound-wave';
-
+  show_notif: function (message, type, delay = 3000) {
     $.notify({
-      icon: icon,
       message: message
-
-    }, {
-      type: color,
-      timer: 1000,
-      placement: {
-        from: from,
-        align: align
-      }
+    },{
+      type: type,
+      delay: delay,
+      offset: { x: 15, y: 65 }, 
+      template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0} alert-dismissable" role="alert">' +
+        '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+        '<span data-notify="message">{2}</span>' +
+      '</div>' 
     });
   }
 }

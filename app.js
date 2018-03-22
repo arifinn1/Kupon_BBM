@@ -17,6 +17,7 @@ require('./secrets/passport2.js')(passport);
 
 // Middleware
 app.use(express.static(__dirname + '/public'));
+app.use('/admin-lte', express.static(__dirname + '/node_modules/admin-lte/dist/'));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

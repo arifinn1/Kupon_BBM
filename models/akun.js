@@ -30,6 +30,7 @@ function grabAkunCredentials(kdAkun, callback) {
   // Skeleton JSON
   var loginAkun = {
     local: {
+      kd: null,
       nip: null,
       nama: null,
       akses: null
@@ -39,7 +40,7 @@ function grabAkunCredentials(kdAkun, callback) {
   // SQL joins to get all credentials/tokens of a single akun
   // to fill in loginAkun JSON.
   // knex.select('nip', 'nama', 'password')
-  knex.select('nip', 'nama', 'akses')
+  knex.select('kd', 'nip', 'nama', 'akses')
     .from('akun')
     .where('kd', '=', kdAkun).then(function (row) {
       row = row[0];
@@ -48,6 +49,7 @@ function grabAkunCredentials(kdAkun, callback) {
         callback('Could not find akun with that Kd', null);
       } else {
         // Fill in loginAkun JSON
+        loginAkun.local.kd = row.kd;
         loginAkun.local.nip = row.nip;
         loginAkun.local.nama = row.nama;
         loginAkun.local.akses = row.akses;
