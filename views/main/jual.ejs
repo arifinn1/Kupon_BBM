@@ -1,0 +1,146 @@
+<% layout('layout') -%>
+
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+
+      <div class="box" id="box-tjual">
+        <div class="box-header">
+          <h3 class="box-title">Daftar Penjualan</h3>
+        </div>
+        <div class="box-body">
+          <div id="alert-view"></div>
+          <table id="tjual" class="display" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>Kode</th>
+                <th>SPBU</th>
+                <th>Instansi</th>
+                <th>Tanggal</th>
+                <th>Liter</th>
+                <th>Rupiah</th>
+                <th>Bayar</th>
+                <th>Dibuat</th>
+                <th>Oleh</th>
+                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="clearInput('', '', '', '', '', '', true)"><i class="fa fa-plus"></i></button></th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>Kode</th>
+                <th>SPBU</th>
+                <th>Instansi</th>
+                <th>Tanggal</th>
+                <th>Liter</th>
+                <th>Rupiah</th>
+                <th>Bayar</th>
+                <th>Dibuat</th>
+                <th>Oleh</th>
+                <th></th>
+              </tr>
+            </tfoot>
+            <tbody>
+              <% for (var i=0; i<jual.length; i++) { %>
+                <tr>
+                  <td><%= jual[i].kd %></td>
+                  <td><%= jual[i].nm_spbu %></td>
+                  <td><%= jual[i].nm_instansi %></td>
+                  <td><%= jual[i].s_tanggal %></td>
+                  <td><%= jual[i].liter %></td>
+                  <td><%= jual[i].rupiah %></td>
+                  <td><%= jual[i].bayar %></td>
+                  <td><%= jual[i].dibuat %></td>
+                  <td><%= jual[i].nm_akun %></td>
+                  <td>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= jual[i].kd %>', '<%= jual[i].kd_spbu %>', '<%= jual[i].kd_instansi %>', '<%= jual[i].nm_instansi %>', new Date('<%= jual[i].tanggal %>'), '<%= jual[i].liter %>', '<%= jual[i].rupiah %>', '<%= jual[i].bayar %>', '<%= jual[i].dibuat %>', '<%= jual[i].nm_akun %>', true)"><i class="fa fa-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= jual[i].kd %>', '<%= jual[i].nm_spbu %>', '<%= spbu[i].nm_instansi %>')"><i class="fa fa-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="box" id="box-jual">
+        <div class="box-header">
+          <h3 class="box-title">Transaksi Penjualan</h3>
+        </div>
+        <form id="form-jual" method="post" onsubmit="return simpan()">
+          <div class="box-body">
+            <div id="alert-input"></div>
+            <div class="row">
+
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>Kode</label>
+                  <input type="text" class="form-control" placeholder="Kode" name="kd" id="kd" required>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>SPBU</label>
+                  <select class="form-control" id="kd_spbu" name="kd_spbu" data-live-search="true" required>
+                    <% for (var i=0; i<spbu.length; i++) { %>
+                      <option value="<%= spbu[i].kd %>">SPBU <%= spbu[i].kd_pertamina+' - '+spbu[i].nama %></option>
+                    <% } %>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>SPBU</label>
+                  <select class="form-control" id="kd_instansi" name="kd_instansi" data-live-search="true" required>
+                    <% for (var i=0; i<instansi.length; i++) { %>
+                      <option value="<%= instansi[i].dc %>"><%= instansi[i].nama %></option>
+                    <% } %>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="box-footer">
+            <button type="submit" class="btn btn-primary btn-sm"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
+            <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', '', '', '', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  $(document).ready(function() {
+    tjual= $('#tjual').DataTable({
+      columns: [
+        { data: 'kd' },
+        { data: 'nm_spbu' },
+        { data: 'nm_instansi' },
+        { data: 's_tanggal' },
+        { data: 'liter' },
+        { data: 'rupiah' },
+        { data: 'bayar' },
+        { data: 'dibuat' },
+        { data: 'nm_akun' },
+        { data: 'tombol', className: 'text-right has-button', orderable: false }
+      ]
+    });
+
+    $('#kd_spbu').selectpicker();
+    $('#kd_instansi').selectpicker();
+
+    $('#tjual tbody').on( 'click', 'div.btn-group', function () {
+      active_row = $(this).parents('tr');
+    });
+  });
+
+  //$('#box-jual').hide();
+  var tjual, active_row;
+</script>

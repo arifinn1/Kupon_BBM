@@ -6,6 +6,7 @@ const bbm = require('./bbm');
 const harga = require('./harga');
 const kupon = require('./kupon');
 const spbu = require('./spbu');
+const jual = require('./jual');
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use('/bbm', bbm);
 router.use('/harga', harga);
 router.use('/kupon', kupon);
 router.use('/spbu', spbu);
+router.use('/jual', jual);
 
 module.exports = router;
