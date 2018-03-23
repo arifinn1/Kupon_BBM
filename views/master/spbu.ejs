@@ -35,14 +35,14 @@
               <% for (var i=0; i<spbu.length; i++) { %>
                 <tr>
                   <td><%= spbu[i].kd_pertamina %></td>
-                  <td><%= spbu[i].nama_cv %></td>
+                  <td><%= spbu[i].nama %></td>
                   <td><%= spbu[i].alamat %></td>
                   <td><%= spbu[i].email %></td>
                   <td><%= spbu[i].telp %></td>
                   <td>
                     <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= spbu[i].kd %>', '<%= spbu[i].kd_pertamina %>', '<%= spbu[i].nama_cv %>', '<%= spbu[i].alamat %>', '<%= spbu[i].email %>', '<%= spbu[i].telp %>', true)"><i class="fa fa-pencil"></i></button>
-                      <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= spbu[i].kd %>', '<%= spbu[i].kd_pertamina %>', '<%= spbu[i].nama_cv %>')"><i class="fa fa-trash"></i></button>
+                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= spbu[i].kd %>', '<%= spbu[i].kd_pertamina %>', '<%= spbu[i].nama %>', '<%= spbu[i].alamat %>', '<%= spbu[i].email %>', '<%= spbu[i].telp %>', true)"><i class="fa fa-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= spbu[i].kd %>', '<%= spbu[i].kd_pertamina %>', '<%= spbu[i].nama %>')"><i class="fa fa-trash"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -56,7 +56,7 @@
         <div class="box-header">
           <h3 class="box-title">Kelola SPBU</h3>
         </div>
-        <form id="form-spbu" method="post" onsubmit="">
+        <form id="form-spbu" method="post" onsubmit="return simpan()">
           <div class="box-body">
             <div id="alert-input"></div>
             <div class="row">
@@ -72,8 +72,8 @@
 
               <div class="col-md-8">
                 <div class="form-group">
-                  <label>Nama CV</label>
-                  <input type="text" class="form-control" placeholder="Nama CV" name="nama_cv" id="nama_cv" required>
+                  <label>Nama</label>
+                  <input type="text" class="form-control" placeholder="Nama" name="nama" id="nama" required>
                 </div>
               </div>
 
@@ -114,7 +114,7 @@
     tspbu= $('#tspbu').DataTable({
       columns: [
         { data: 'kd_pertamina' },
-        { data: 'nama_cv' },
+        { data: 'nama' },
         { data: 'alamat' },
         { data: 'email' },
         { data: 'telp' },
@@ -131,7 +131,7 @@
   $('#box-spbu').hide();
   var tspbu, active_row;
 
-  function clearInput(kd, kd_pertamina, nama_cv, alamat, email, telp, show) {
+  function clearInput(kd, kd_pertamina, nama, alamat, email, telp, show) {
     if (show) {
       $('#box-tspbu').slideUp('fast', function() {
         $('#box-spbu').slideDown('fast');
@@ -146,14 +146,14 @@
     $('#kd').val(kd);
     $('#okd_pertamina').val(kd_pertamina);
     $('#kd_pertamina').val(kd_pertamina);
-    $('#nama_cv').val(nama_cv);
-    $('#alamat').html(alamat);
+    $('#nama').val(nama);
+    $('#alamat').val(alamat);
     $('#email').val(email);
     $('#telp').val(telp);
   }
 
   function simpan() {
-    /*$('#box-spbu').LoadingOverlay('show');
+    $('#box-spbu').LoadingOverlay('show');
     $.ajax({
       type: 'POST',
       url: '/spbu',
@@ -178,7 +178,49 @@
       if(confirm('Simpan data gagal, coba lagi?')){ simpan(); }
     }).always(function () {
       $('#box-spbu').LoadingOverlay('hide', true);
-    });*/
-    return true;
+    });
+    return false;
+  }
+
+  function hapus(kd, kd_pertamina, nama) {
+    if(confirm('Yakin ingin menghapus SPBU '+kd_pertamina+' milik '+nama+' ?')){
+      $('#box-tspbu .box-body').LoadingOverlay('show');
+      jQuery.ajax({
+        type: 'DELETE',
+        url: '/spbu',
+        data: { kd: kd }
+      }).done(function(data) {
+        if (data.res == 'SUKSES') {
+          tspbu.row(active_row).remove().draw();
+          active_row = null;
+          js_fun.show_notif('<strong>Sukses!</strong> Data berhasil dihapus.', 'success');
+        }else{ js_fun.show_notif('<strong>Gagal!</strong> Data gagal dihapus.', 'warning'); }
+      }).fail(function (jqXHR, textStatus) {
+        if(confirm('Hapus data gagal, coba lagi?')){ hapus(kd, kd_pertamina, nama); }
+      }).always(function () {
+        $('#box-tspbu .box-body').LoadingOverlay('hide', true);
+      });
+    }
+  }
+
+  function reloadTampilan(op, data) {
+    var data = {
+      kd_pertamina  : data.kd_pertamina,
+      nama          : data.nama,
+      alamat        : data.alamat,
+      email         : data.email,
+      telp          : data.telp,
+      tombol        : `<div class="btn-group">
+        <button type="button" class="btn btn-sm btn-info" onclick="clearInput('`+data.kd+`', '`+data.kd_pertamina+`', '`+data.nama+`', '`+data.alamat+`', '`+data.email+`', '`+data.telp+`', true)"><i class="fa fa-pencil"></i></button>
+        <button type="button" class="btn btn-sm btn-warning" onclick="hapus('`+data.kd+`', '`+data.kd_pertamina+`', '`+data.nama+`')"><i class="fa fa-trash"></i></button>
+      </div>`
+    };
+    
+    if(op=='UBAH'){ tspbu.row(active_row).remove().draw(); }
+    tspbu.row.add(data).draw();
+    active_row = null;
+
+    clearInput('', '', '', '', '', '', false);
+    $('#alert-input').html('');
   }
 </script>
