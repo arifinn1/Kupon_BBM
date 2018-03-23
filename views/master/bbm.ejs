@@ -47,9 +47,9 @@
         <div class="box-header">
           <h3 class="box-title">Kelola BBM</h3>
         </div>
-        <div class="box-body">
-          <div id="alert-input"></div>
-          <form id="form-bbm" onsubmit="return simpan()">
+        <form id="form-bbm" onsubmit="return simpan()">
+          <div class="box-body">
+            <div id="alert-input"></div>
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
@@ -70,13 +70,13 @@
                   </select>
                 </div>
               </div>
-            </div>              
-          </form>
-        </div>
-        <div class="box-footer">
-          <button type="submit" class="btn btn-primary btn-sm" onclick="$('#form-bbm').submit()"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
-          <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
-        </div>
+            </div>
+          </div>
+          <div class="box-footer">
+            <button type="submit" class="btn btn-primary btn-sm" onclick="$('#form-bbm').submit()"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
+            <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

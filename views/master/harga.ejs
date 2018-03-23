@@ -71,9 +71,9 @@
         <div class="box-header">
           <h3 class="box-title">Kelola Harga</h3>
         </div>
-        <div class="box-body">
-          <div id="alert-input"></div>
-          <form id="form-harga" onsubmit="return simpan()">
+        <form id="form-harga" onsubmit="return simpan()">
+          <div class="box-body">
+            <div id="alert-input"></div>
             <div class="row">
 
               <div class="col-md-3">
@@ -114,13 +114,13 @@
                 </div>
               </div>
             </div>
-          </form>
-        </div>
+          </div>
 
-        <div class="box-footer">
-          <button type="submit" class="btn btn-primary btn-sm" onclick="$('#form-harga').submit()"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
-          <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', new Date(), '', '', '', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
-        </div>
+          <div class="box-footer">
+            <button type="submit" class="btn btn-primary btn-sm" onclick="$('#form-harga').submit()"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
+            <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', new Date(), '', '', '', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
