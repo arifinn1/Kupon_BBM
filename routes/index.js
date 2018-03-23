@@ -13,6 +13,7 @@ router.use('/', main);
 router.use('/', akun2);
 router.use('/instansi', instansi);
 router.use('/bbm', bbm);
+router.use('/harga', harga);
 router.use('/kupon', kupon);
 router.use('/spbu', spbu);
 

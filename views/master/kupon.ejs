@@ -62,7 +62,7 @@
               <div class="col-md-2">
                 <div class="form-group">
                   <label>Jumlah</label>
-                  <select multiple class="form-control" id="jumlah" name="jumlah" required>
+                  <select multiple class="form-control" id="jumlah" name="jumlah">
                     <% for (var i=0; i<v_kupon.length; i++) { %>
                       <option value="<%= v_kupon[i] %>"><%= v_kupon[i] %></option>
                     <% } %>
@@ -74,7 +74,7 @@
           </div>
 
           <div class="box-footer">
-            <button type="submit" class="btn btn-primary btn-sm" onclick="$('#form-kupon').submit()"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
+            <button type="submit" class="btn btn-primary btn-sm"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
             <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
           </div>
         </form>
