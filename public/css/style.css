@@ -13,3 +13,7 @@ table tbody td.has-button, table th.has-button {
 .info-box-big {
   font-size: 27pt !important;
 }
+
+textarea.noresize {
+  resize: none;
+}

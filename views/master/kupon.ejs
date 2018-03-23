@@ -1,0 +1,164 @@
+<% layout('layout') -%>
+
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+
+      <div class="box" id="box-tkupon">
+        <div class="box-header">
+          <h3 class="box-title">Data Kupon</h3>
+        </div>
+        <div class="box-body">
+          <div id="alert-view"></div>
+          <table id="tkupon" class="display" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>BBM</th>
+                <th>Jumlah</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>BBM</th>
+                <th>Jumlah</th>
+                <th></th>
+              </tr>
+            </tfoot>
+            <tbody>
+              <% for (var i=0; i<c_kupon.length; i++) { %>
+                <tr>
+                  <td><%= c_kupon[i].nama %></td>
+                  <td><%= c_kupon[i].jumlah.replace(/-/g , ', ') %></td>
+                  <td>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= c_kupon[i].kd_bbm %>', '<%= c_kupon[i].nama %>', '<%= c_kupon[i].jumlah %>', true)"><i class="fa fa-pencil"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="box" id="box-kupon">
+        <div class="box-header">
+          <h3 class="box-title">Kelola Kupon</h3>
+        </div>
+        <div class="box-body">
+          <div id="alert-input"></div>
+          <form id="form-kupon" method="post" onsubmit="return simpan()">
+            <div class="row">
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>BBM</label>
+                  <input type="hidden" name="kd_bbm" id="kd_bbm">
+                  <p><span id="txt-nm_bbm">...</span></p>
+                </div>
+              </div>
+
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>Jumlah</label>
+                  <select multiple class="form-control" id="jumlah" name="jumlah" required>
+                    <% for (var i=0; i<v_kupon.length; i++) { %>
+                      <option value="<%= v_kupon[i] %>"><%= v_kupon[i] %></option>
+                    <% } %>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+          </form>
+        </div>
+
+        <div class="box-footer">
+          <button type="submit" class="btn btn-primary btn-sm" onclick="$('#form-kupon').submit()"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
+          <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  $(document).ready(function() {
+    tkupon = $('#tkupon').DataTable({
+      columns: [
+        { data: 'nama' },
+        { data: 'jumlah' },
+        { data: 'tombol', className: 'text-right has-button', orderable: false }
+      ]
+    });
+
+    $('#tkupon tbody').on( 'click', 'div.btn-group', function () {
+      active_row = $(this).parents('tr');
+    });
+  });
+
+  $('#box-kupon').hide();
+  var tkupon, active_row;
+
+  function clearInput(kd_bbm, nm_bbm, jumlah, show) {
+    if (show) {
+      $('#box-tkupon').slideUp('fast', function() {
+        $('#box-kupon').slideDown('fast');
+        $('#jumlah').focus();
+      });
+    } else {
+      $('#box-kupon').slideUp('fast', function() {
+        $('#box-tkupon').slideDown('fast');
+      });
+    }
+    
+    $('#kd_bbm').val(kd_bbm);
+    $('#txt-nm_bbm').html(nm_bbm);
+    
+    $.each(('<%= v_kupon %>').split(','), function(i,e) {
+      $('#jumlah option[value="' + e + '"]').prop('selected', false);
+    });
+
+    $.each(jumlah.split("-"), function(i,e) {
+      $('#jumlah option[value="' + e + '"]').prop('selected', true);
+    });
+  }
+
+  function simpan() {
+    $('#box-kupon').LoadingOverlay('show');
+    $.ajax({
+      type: 'POST',
+      url: '/kupon',
+      data: $('#form-kupon').serialize()
+    }).done(function(data) {
+      if (data.res == 'SUKSES') {
+        js_fun.show_notif('<strong>Sukses!</strong> Data telah berhasil tersimpan.', 'success');
+        reloadTampilan(data.op, data.data);
+      } else {
+        js_fun.show_notif('<strong>Gagal!</strong> Koneksi bermasalah.', 'warning');
+      }
+    }).fail(function (jqXHR, textStatus) {
+      if(confirm('Simpan data gagal, coba lagi?')){ simpan(); }
+    }).always(function () {
+      $('#box-kupon').LoadingOverlay('hide', true);
+    });
+    return false;
+  }
+
+  function reloadTampilan(op, data) {
+    var data = {
+      nama      : data.nama,
+      jumlah    : data.jumlah.replace(/-/g , ', '),
+      tombol    : `<div class="btn-group">
+        <button type="button" class="btn btn-sm btn-info" onclick="clearInput('`+data.kd_bbm+`', '`+data.nama+`', '`+data.jumlah+`', true)"><i class="fa fa-pencil"></i></button>
+      </div>`
+    };
+    
+    tkupon.row(active_row).remove().draw();
+    tkupon.row.add(data).draw();
+    active_row = null;
+
+    clearInput('', '', '', false);
+  }
+</script>

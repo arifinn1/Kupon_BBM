@@ -75,7 +75,7 @@
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <script>
   $(document).ready(function() {
@@ -99,6 +99,7 @@
     if (show) {
       $('#box-tinstansi').slideUp('fast', function() {
         $('#box-instansi').slideDown('fast');
+        $('#nama').focus();
         
         if (dc=='') {
           $("#box-instansi").LoadingOverlay("show");
@@ -120,7 +121,6 @@
     
     $('#odc').val(dc);
     $('#nama').val(nama);
-    $('#nama').focus();
   }
 
   function simpan() {

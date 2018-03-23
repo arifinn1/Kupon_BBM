@@ -124,7 +124,7 @@
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <script>
   $(document).ready(function() {
@@ -160,6 +160,7 @@
     if (show) {
       $('#box-tharga').slideUp('fast', function() {
         $('#box-harga').slideDown('fast');
+        $('#harga').focus();
       });
     } else {
       $('#box-harga').slideUp('fast', function() {
@@ -174,8 +175,6 @@
 
     $('#txt-dibuat').html(dibuat);
     $('#txt-oleh').html(oleh);
-
-    $('#harga').focus();
   }
 
   function simpan() {

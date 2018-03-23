@@ -80,7 +80,7 @@
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <script>
   $(document).ready(function() {
@@ -108,6 +108,7 @@
     if (show) {
       $('#box-tbbm').slideUp('fast', function() {
         $('#box-bbm').slideDown('fast');
+        $('#nama').focus();
       });
     } else {
       $('#box-bbm').slideUp('fast', function() {
@@ -120,7 +121,6 @@
     $('#nama').val(nama);
     $('#warna_bg').val(warna);
     $('#lb-bg').attr('class', 'bg-'+warna);
-    $('#nama').focus();
   }
 
   function simpan() {

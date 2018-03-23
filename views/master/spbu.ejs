@@ -1,0 +1,184 @@
+<% layout('layout') -%>
+
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+
+      <div class="box" id="box-tspbu">
+        <div class="box-header">
+          <h3 class="box-title">Data SPBU</h3>
+        </div>
+        <div class="box-body">
+          <div id="alert-view"></div>
+          <table id="tspbu" class="display" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>Kode</th>
+                <th>Nama</th>
+                <th>Alamat</th>
+                <th>Email</th>
+                <th>Telp</th>
+                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="clearInput('', '', '', '', '', '', true)"><i class="fa fa-plus"></i></button></th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>Kode</th>
+                <th>Nama</th>
+                <th>Alamat</th>
+                <th>Email</th>
+                <th>Telp</th>
+                <th></th>
+              </tr>
+            </tfoot>
+            <tbody>
+              <% for (var i=0; i<spbu.length; i++) { %>
+                <tr>
+                  <td><%= spbu[i].kd_pertamina %></td>
+                  <td><%= spbu[i].nama_cv %></td>
+                  <td><%= spbu[i].alamat %></td>
+                  <td><%= spbu[i].email %></td>
+                  <td><%= spbu[i].telp %></td>
+                  <td>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= spbu[i].kd %>', '<%= spbu[i].kd_pertamina %>', '<%= spbu[i].nama_cv %>', '<%= spbu[i].alamat %>', '<%= spbu[i].email %>', '<%= spbu[i].telp %>', true)"><i class="fa fa-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= spbu[i].kd %>', '<%= spbu[i].kd_pertamina %>', '<%= spbu[i].nama_cv %>')"><i class="fa fa-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="box" id="box-spbu">
+        <div class="box-header">
+          <h3 class="box-title">Kelola SPBU</h3>
+        </div>
+        <div class="box-body">
+          <div id="alert-input"></div>
+          <form id="form-spbu" method="post" >
+            <div class="row">
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Kd. Pertamina</label>
+                  <input type="hidden" name="kd" id="kd">
+                  <input type="hidden" name="okd_pertamina" id="okd_pertamina">
+                  <input type="text" class="form-control" placeholder="Kd. Pertamina" name="kd_pertamina" id="kd_pertamina" required="true">
+                </div>
+              </div>
+
+              <div class="col-md-8">
+                <div class="form-group">
+                  <label>Nama CV</label>
+                  <input type="text" class="form-control" placeholder="Nama CV" name="nama_cv" id="nama_cv" required>
+                </div>
+              </div>
+
+              <div class="col-md-8">
+                <div class="form-group">
+                  <label>Alamat</label>
+                  <textarea class="form-control noresize" rows="5" placeholder="Alamat" name="alamat" id="alamat"></textarea>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Telp</label>
+                  <input type="text" class="form-control" placeholder="Telpon" name="telp" id="telp">
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="email" class="form-control" placeholder="Email" name="email" id="email">
+                </div>
+              </div>
+
+            </div>
+          </form>
+        </div>
+
+        <div class="box-footer">
+          <button type="submit" class="btn btn-primary btn-sm" onclick="$('#form-spbu').submit()"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
+          <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', '', '', '', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  $(document).ready(function() {
+    tspbu= $('#tspbu').DataTable({
+      columns: [
+        { data: 'kd_pertamina' },
+        { data: 'nama_cv' },
+        { data: 'alamat' },
+        { data: 'email' },
+        { data: 'telp' },
+        { data: 'tombol', className: 'text-right has-button', orderable: false }
+      ],
+      order: [[ 1, "desc" ]]
+    });
+
+    $('#tspbu tbody').on( 'click', 'div.btn-group', function () {
+      active_row = $(this).parents('tr');
+    });
+  });
+
+  $('#box-spbu').hide();
+  var tspbu, active_row;
+
+  function clearInput(kd, kd_pertamina, nama_cv, alamat, email, telp, show) {
+    if (show) {
+      $('#box-tspbu').slideUp('fast', function() {
+        $('#box-spbu').slideDown('fast');
+        $('#kd_pertamina').focus();
+      });
+    } else {
+      $('#box-spbu').slideUp('fast', function() {
+        $('#box-tspbu').slideDown('fast');
+      });
+    }
+    
+    $('#kd').val(kd);
+    $('#okd_pertamina').val(kd_pertamina);
+    $('#kd_pertamina').val(kd_pertamina);
+    $('#nama_cv').val(nama_cv);
+    $('#alamat').html(alamat);
+    $('#email').val(email);
+    $('#telp').val(telp);
+  }
+
+  function simpan() {
+    /*$('#box-spbu').LoadingOverlay('show');
+    $.ajax({
+      type: 'POST',
+      url: '/spbu',
+      data: $('#form-spbu').serialize()
+    }).done(function(data) {
+      if (data.res == 'SUKSES') {
+        if (data.op == 'BARU') {
+          js_fun.show_notif('<strong>Sukses!</strong> Data baru telah berhasil tersimpan.', 'success');
+        } else {
+          js_fun.show_notif('<strong>Sukses!</strong> Data telah berhasil dirubah.', 'success');
+        }
+      } else if (data.res == 'KODE') {
+        js_fun.show_notif('<strong>Gagal!</strong> Kode SPBU telah digunakan.', 'warning');
+      } else {
+        js_fun.show_notif('<strong>Gagal!</strong> Koneksi bermasalah.', 'warning');
+      }
+
+      if (data.res == 'SUKSES') {
+        reloadTampilan(data.op, data.data);
+      }
+    }).fail(function (jqXHR, textStatus) {
+      if(confirm('Simpan data gagal, coba lagi?')){ simpan(); }
+    }).always(function () {
+      $('#box-spbu').LoadingOverlay('hide', true);
+    });*/
+    return true;
+  }
+</script>

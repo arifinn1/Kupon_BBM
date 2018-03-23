@@ -4,16 +4,17 @@ function clearArray(arr) {
 
 module.exports = {
   database: {
-    user: 'postgres',
-    host: 'localhost',
+    user    : 'postgres',
+    host    : 'localhost',
     database: 'gelora',
     password: 'arifin',
-    port: 5432
+    port    : 5432
   },
   secretKey: 'arifin123',
   active: {
     dashboard   : '',
     instansi    : '',
+    spbu        : '',
     profile     : '',
     akun        : '',
     bbm         : '',
@@ -24,5 +25,6 @@ module.exports = {
     tukar_kupon : ''
   },
   color: [ 'red', 'yellow', 'aqua', 'blue', 'light-blue', 'green', 'navy', 'teal', 'olive', 'lime', 'orange', 'fuchsia', 'purple', 'maroon', 'black' ],
+  v_kupon: [ 2, 5, 10, 20 ],
   clearArray: clearArray
 };
