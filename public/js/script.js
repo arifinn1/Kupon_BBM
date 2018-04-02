@@ -17,5 +17,21 @@ js_fun = {
         '<span data-notify="message">{2}</span>' +
       '</div>' 
     });
+  },
+
+  format_money: function (value) {
+    let ret = value.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1.");
+    return isNaN(ret) ? 0 : ret;
+  },
+
+  ucwords: function (value) {
+    return value.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+      return letter.toUpperCase();
+    });
+  },
+
+  conv_date: function (value) {
+    let options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    return value.toLocaleDateString('id-ID', options);
   }
 }

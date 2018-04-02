@@ -38,7 +38,7 @@ router.post('/', (req, res, next) => {
           let { rowCount } = await pool.query('SELECT kd_pertamina FROM spbu WHERE kd_pertamina=$1', [spbu.kd_pertamina]);
           if (rowCount == 0) {
             let { rows } = await pool.query('SELECT (coalesce(max(kd),0)+1) as kd FROM spbu');
-            await pool.query('INSERT INTO spbu (kd, kd_pertamina, nama, alamat, email, telp) VALUES($1, $2, $3, $4, $5, $6)', [rows[0].kd, spbu.kd_pertamina, spbu.nama, spbu.alamat, spbu.email, spbu.telp]);
+            await pool.query('INSERT INTO spbu (kd, kd_pertamina, nama, alias, alamat, email, telp) VALUES($1, $2, $3, $4, $5, $6, $7)', [rows[0].kd, spbu.kd_pertamina, spbu.nama, spbu.alias, spbu.alamat, spbu.email, spbu.telp]);
 
             spbu.kd = rows[0].kd;
             res.send({ op: 'BARU', res: 'SUKSES', data: spbu });
@@ -49,14 +49,14 @@ router.post('/', (req, res, next) => {
           if (spbu.okd_pertamina != spbu.kd_pertamina) {
             let { rowCount } = await pool.query('SELECT kd_pertamina FROM spbu WHERE kd_pertamina=$1', [spbu.kd_pertamina]);
             if (rowCount == 0) {
-              await pool.query('UPDATE spbu SET kd_pertamina=$1, nama=$2, alamat=$3, email=$4, telp=$5 WHERE kd=$6', [spbu.kd_pertamina, spbu.nama, spbu.alamat, spbu.email, spbu.telp, spbu.kd]);
+              await pool.query('UPDATE spbu SET kd_pertamina=$1, nama=$2, alias=$3, alamat=$4, email=$5, telp=$6 WHERE kd=$7', [spbu.kd_pertamina, spbu.nama, spbu.alias, spbu.alamat, spbu.email, spbu.telp, spbu.kd]);
 
               res.send({ op: 'UBAH', res: 'SUKSES', data: spbu });
             } else {
               res.send({ op: 'UBAH', res: 'KODE' });
             }
           } else {
-            await pool.query('UPDATE spbu SET nama=$1, alamat=$2, email=$3, telp=$4 WHERE kd=$5', [spbu.nama, spbu.alamat, spbu.email, spbu.telp, spbu.kd]);
+            await pool.query('UPDATE spbu SET nama=$1, alias=$2, alamat=$3, email=$4, telp=$5 WHERE kd=$6', [spbu.nama, spbu.alias, spbu.alamat, spbu.email, spbu.telp, spbu.kd]);
             res.send({ op: 'UBAH', res: 'SUKSES', data: spbu });
           }
         }

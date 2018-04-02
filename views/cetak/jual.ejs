@@ -1,0 +1,116 @@
+<% layout('layout-blank') -%>
+
+<body>
+  <div class="container-fluid">
+    <!--<div class="row">
+      <div class="col-xs-2">
+        <div class="form-group">
+          <label>Kode</label>
+          <p>...</p>
+        </div>
+      </div>
+
+      <div class="col-xs-5">
+        <div class="form-group">
+          <label>SPBU</label>
+          <p>...</p>
+        </div>
+      </div>
+
+      <div class="col-xs-5">
+        <div class="form-group">
+          <label>Instansi</label>
+          <p>...</p>
+        </div>
+      </div>
+      
+      <div class="col-xs-7">
+        <div class="row">
+          <div class="col-xs-6">
+            <div class="form-group">
+              <label>Tanggal</label>
+              <p>...</p>
+            </div>
+          </div>
+
+          <div class="col-xs-3">
+            <div class="form-group">
+              <label>Liter</label>
+              <p>...</p>
+            </div>
+          </div>
+
+          <div class="col-xs-3">
+            <div class="form-group">
+              <label>Bayar</label>
+              <p>...</p>
+            </div>
+          </div>
+
+          <div class="col-xs-6">
+            <div class="form-group">
+              <label>Dibuat</label>
+              <p>...</p>
+            </div>
+          </div>
+          <div class="col-xs-6">
+            <div class="form-group">
+              <label>Oleh</label>
+              <p>...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xs˜-5">
+        <div class="form-group">
+          <label>Rupiah</label>
+          <p>...</p>
+        </div>
+      </div>
+
+    </div>-->
+
+    <div class="row">
+      <div class="col-xs-12">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th class="text-center" colspan="5">U R A I A N</th>
+              <th class="text-center" conspan="2">U A N G</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% let t_bbm = '', lembar = 0, liter = 0, rupiah = 0;
+            for (let i=0; i<det_jual.length; i++) {
+              lembar += det_jual[i].lembar;
+              liter += det_jual[i].liter;
+              rupiah += det_jual[i].rupiah;
+              %>
+              <tr>
+              <% if (t_bbm != det_jual[i].nm_bbm) {
+                t_bbm = det_jual[i].nm_bbm; %>
+                <td><%= t_bbm %></td>
+              <% } else { %>
+                <td></td>
+              <% } %>
+              <td class="text-center"><%= det_jual[i].jenis %></td>
+              <td class="text-right"><%= det_jual[i].lembar %></td>
+              <td class="text-center"><%= det_jual[i].kupon_awal+` - `+(det_jual[i].kupon_awal + det_jual[i].lembar - 1) %></td>
+              <td class="text-right"><%= det_jual[i].liter %></td>
+              <td class="text-right"><%= det_jual[i].rupiah.toLocaleString(['ban', 'id']) %></td></tr>
+            <% } %>
+            <tr>
+              <th></th>
+              <th></th>
+              <th class="text-right"><%= lembar %></th>
+              <th></th>
+              <th class="text-right"><%= liter %></th>
+              <th class="text-right"><%= rupiah.toLocaleString(['ban', 'id']) %></th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>

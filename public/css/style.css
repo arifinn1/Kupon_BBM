@@ -6,8 +6,19 @@ table tbody td.has-button, table th.has-button {
   padding: 4px 10px !important;
 }
 
-.form-group p {
+table .pad-btn {
+  width: 80px;
+  padding: 3px 8px !important;
+}
+
+.form-group p.up {
   margin-top: 6px !important;
+}
+
+.form-group p.txt-big {
+  font-size: 55pt;
+  margin: 0pt 0 -10pt;
+  font-weight: bold;
 }
 
 .info-box-big {
@@ -16,4 +27,8 @@ table tbody td.has-button, table th.has-button {
 
 textarea.noresize {
   resize: none;
+}
+
+input[type="checkbox"][readonly] {
+  pointer-events: none;
 }
