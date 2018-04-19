@@ -4,7 +4,10 @@ const router = Router();
 const passport = require('passport');
 const config = require('../secrets/configuration');
 
-router.get('/', (req, res, next) => {
+router.get('/', index);
+router.get('/:tgl', index);
+
+function index(req, res, next) {
   if (!req.isAuthenticated()) {
     res.redirect('/signin');
   } else {
@@ -13,6 +16,7 @@ router.get('/', (req, res, next) => {
         let { rows } = await pool.query('SELECT b.*, k.jumlah FROM bbm b, kupon k WHERE b.kd=k.kd_bbm ORDER BY b.kd');
         let bbm = rows;
         let c_harga = [];
+        let tgl = typeof req.params.tgl !== 'undefined' ? req.params.tgl : '';
         
         for (var i=0; i<bbm.length; i++) {
           let t_harga = await pool.query('SELECT * FROM harga WHERE kd_bbm=$1 AND berlaku<NOW() ORDER BY berlaku DESC LIMIT 1', [bbm[i].kd]);
@@ -27,7 +31,7 @@ router.get('/', (req, res, next) => {
 
         let spbu = await pool.query(`SELECT * FROM spbu WHERE alias!=''`);
         let instansi = await pool.query('SELECT * FROM instansi');
-        let jual = await pool.query(`SELECT j.*, to_char(j.tanggal, 'DD-MM-YY HH24:MI') as s_tanggal, to_char(j.dibuat, 'DD-MM-YY HH24:MI') as s_dibuat, s.alias, s.nama as nm_spbu, i.nama as nm_instansi, a.nama as nm_akun FROM jual j, spbu s, instansi i, akun a WHERE j.kd_spbu=s.kd AND j.kd_instansi=i.dc AND j.oleh=a.kd`);
+        let jual = await pool.query(`SELECT j.*, to_char(j.tanggal, 'DD-MM-YY HH24:MI') as s_tanggal, to_char(j.dibuat, 'DD-MM-YY HH24:MI') as s_dibuat, s.alias, s.nama as nm_spbu, i.nama as nm_instansi, a.nama as nm_akun FROM jual j, spbu s, instansi i, akun a WHERE j.kd_spbu=s.kd AND j.kd_instansi=i.dc AND j.oleh=a.kd AND to_char(j.tanggal, 'YYYY-MM-DD')=`+(tgl != '' ? `'`+tgl+`'` : `to_char(NOW(), 'YYYY-MM-DD')`));
         
         config.clearArray(config.active);
         config.active.jual = "active";
@@ -43,14 +47,15 @@ router.get('/', (req, res, next) => {
           spbu            : spbu.rows,
           instansi        : instansi.rows,
           bbm             : c_harga,
-          jual            : jual.rows
+          jual            : jual.rows,
+          tgl             : tgl,
         });
       } catch(e) {
         throw e;      
       }
     })().catch(e => { return next(e); });
   }
-});
+}
 
 router.post('/', (req, res, next) => {
   if (!req.isAuthenticated()) {
@@ -132,21 +137,28 @@ router.get('/detail', (req, res, next) => {
 });
 
 router.get('/cetak/:kd', (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    res.redirect('/signin');
+  } else {
     (async () => {    
       try {
-        let jual = await pool.query(`SELECT j.*, to_char(j.tanggal, 'DD-MM-YY HH24:MI') as s_tanggal, to_char(j.dibuat, 'DD-MM-YY HH24:MI') as s_dibuat, s.alias, s.nama as nm_spbu, i.nama as nm_instansi, a.nama as nm_akun FROM jual j, spbu s, instansi i, akun a WHERE j.kd_spbu=s.kd AND j.kd_instansi=i.dc AND j.oleh=a.kd AND j.kd=$1`, [req.params.kd]);
+        let jual = await pool.query(`SELECT j.*, to_char(j.tanggal, 'D Month YYYY') as s_tanggal, to_char(j.dibuat, 'DD-MM-YY HH24:MI') as s_dibuat, s.kd_pertamina, s.alias, s.nama as nm_spbu, i.nama as nm_instansi, a.nama as nm_akun FROM jual j, spbu s, instansi i, akun a WHERE j.kd_spbu=s.kd AND j.kd_instansi=i.dc AND j.oleh=a.kd AND j.kd=$1`, [req.params.kd]);
 
         let det_jual = await pool.query('SELECT d.*, b.nama as nm_bbm FROM det_jual d, bbm b WHERE d.kd_bbm=b.kd AND d.kd_jual=$1 ORDER BY d.kd_bbm, jenis', [req.params.kd]);
+
+        let spbu = await pool.query(`SELECT * FROM spbu WHERE kd=$1`, [jual.rows[0].kd_spbu]);
 
         res.render('cetak/jual', {
           judul: 'Cetak #'+req.params.kd,
           jual: jual.rows[0],
-          det_jual: det_jual.rows
+          det_jual: det_jual.rows,
+          spbu: spbu.rows[0]
         });
       } catch(e) {
         throw e;      
       }
-    })().catch(e => { return next(e); });  
+    })().catch(e => { return next(e); });
+  }
 });
 
 router.get('/kode_kupon', (req, res, next) => {

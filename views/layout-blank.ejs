@@ -16,14 +16,22 @@
   <link href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" />
   <!-- Bootstrap -->
   <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- Admin LTE -->
-  <link href="/admin-lte/css/AdminLTE.min.css" rel="stylesheet" />
+
+  <% if (typeof lte !== 'undefined') { %>
+    <!-- Admin LTE -->
+    <link href="/admin-lte/css/AdminLTE.min.css" rel="stylesheet" />
+  <% } %>
+
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <!-- Costum CSS & Jquery -->
+  <link href="/css/style.css" rel="stylesheet" />
+  <script src="/js/script.js"></script>
 </head>
 
 <%- body -%>
 
 <!--   Core JS Files   -->
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="/bootstrap/js/bootstrap.min.js"></script>
 
 </html>

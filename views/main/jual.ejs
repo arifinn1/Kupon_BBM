@@ -5,8 +5,17 @@
     <div class="col-xs-12">
 
       <div class="box" id="box-tjual">
-        <div class="box-header">
+        <div class="box-header with-border">
           <h3 class="box-title">Daftar Penjualan</h3>
+          
+          <div class="box-tools">
+            <div class="input-group input-group-sm date" id="tgl" style="width: 150px;" >
+              <input type="text" class="form-control" name="tgl" readonly/>
+              <span class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </span>
+            </div>
+          </div>
         </div>
         <div class="box-body">
           <div id="alert-view"></div>
@@ -65,10 +74,10 @@
       </div>
 
       <div class="box" id="box-jual">
-        <div class="box-header">
+        <div class="box-header with-border">
           <h3 class="box-title">Transaksi Penjualan</h3>
         </div>
-        <form id="form-jual" method="post" onsubmit="return simpan()">
+        <form id="form-jual" method="post" action="/jual" onsubmit="return simpan()">
           <div class="box-body">
             <div id="alert-input"></div>
             <div class="row">
@@ -183,7 +192,7 @@
 
           <div class="box-footer">
             <button id="btn-simpan" type="submit" class="btn btn-primary btn-sm"><i class="fa fa-cloud"></i> &nbsp; SIMPAN</button>
-            <a id="btn-cetak" type="button" class="btn btn-success btn-sm"><i class="fa fa-print"></i> &nbsp; CETAK</a>
+            <a id="btn-cetak" type="button" class="btn btn-success btn-sm" target="_blank"><i class="fa fa-print"></i> &nbsp; CETAK</a>
             <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', '', new Date(), '', '', '', '', '', false)"><i class="fa fa-times"></i> &nbsp; BATAL</button>
           </div>
         </form>
@@ -325,12 +334,24 @@
       ignoreReadonly: true
     });
 
+    $('#tgl').datetimepicker({
+      viewMode: 'days',
+      format: 'DD MMMM YYYY',
+      date: '<%= tgl %>' == '' ? new Date() : new Date('<%= tgl %>'),
+      ignoreReadonly: true
+    });
+
     $('#kd_spbu').selectpicker();
     $('#kd_instansi').selectpicker();
     getKodeKupon();
 
     $('#tjual tbody').on( 'click', 'div.btn-group', function () {
       active_row = $(this).parents('tr');
+    });
+
+    $('#tgl').on('dp.change', function() {
+      $('#tgl').data('DateTimePicker').format('YYYY-MM-DD');
+      window.location.href = '/jual/'+$("input[name=tgl]").val();
     });
 
     $('#notnow').click(function() {
@@ -391,6 +412,7 @@
       });
     }
     
+    $('#btn-cetak').attr('href', kd == '' ? '' : '/jual/cetak/'+kd);
     $('#okd').val(kd);
     $('#kd').val(kd);
     if (kd == '') {
@@ -439,6 +461,7 @@
         }
 
         if (data.res == 'SUKSES') {
+          window.open('/jual/cetak/'+data.data.kd);
           reloadTampilan(data.op, data.data);
         }
       }).fail(function (jqXHR, textStatus) {

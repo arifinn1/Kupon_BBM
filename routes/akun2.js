@@ -124,7 +124,7 @@ router.get('/signin', function (req, res, next) {
   if (req.isAuthenticated()) {
     res.redirect('/');
   } else {
-    res.render('accounts/login2', { errorMessage: '', judul: 'Login' });
+    res.render('accounts/login2', { errorMessage: '', judul: 'Login', lte: true });
   }
 });
 
@@ -136,7 +136,7 @@ router.post('/signin', function (req, res, next) {
       successRedirect: '/',
       failureRedirect: '/signin'
     }, function (err, akun, info) {
-      let t_ret = { errorMessage: '', nip: req.body.nip, password: req.body.password, judul: 'Login' };
+      let t_ret = { errorMessage: '', nip: req.body.nip, password: req.body.password, judul: 'Login', lte: true };
       if (err) {
         t_ret.errorMessage = err.message;
         return res.render('accounts/login2', t_ret);

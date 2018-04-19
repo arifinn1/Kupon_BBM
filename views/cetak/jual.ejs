@@ -1,116 +1,95 @@
 <% layout('layout-blank') -%>
 
-<body>
+<body class="f-11">
   <div class="container-fluid">
-    <!--<div class="row">
-      <div class="col-xs-2">
-        <div class="form-group">
-          <label>Kode</label>
-          <p>...</p>
-        </div>
+    <div class="row address-header">
+      <div class="col-xs-4 text-center" style="font-size: 28px;
+      margin-bottom: -5px;">
+        <span><%= spbu.nama %></span>
       </div>
 
-      <div class="col-xs-5">
-        <div class="form-group">
-          <label>SPBU</label>
-          <p>...</p>
-        </div>
+      <div class="col-xs-8">
+        <span class="f-14"><b>SPB. No. <%= spbu.kd_pertamina+` `+spbu.alias %></b></span><br>
+        <span><%= spbu.alamat+`, Telp. `+spbu.telp %></span>
       </div>
+    </div>
 
-      <div class="col-xs-5">
-        <div class="form-group">
-          <label>Instansi</label>
-          <p>...</p>
-        </div>
-      </div>
-      
-      <div class="col-xs-7">
+    <div class="row f-12">
+      <div class="col-xs-2 f-18">KUITANSI</div>
+
+      <div class="col-xs-4 text-right">
         <div class="row">
-          <div class="col-xs-6">
-            <div class="form-group">
-              <label>Tanggal</label>
-              <p>...</p>
-            </div>
-          </div>
-
-          <div class="col-xs-3">
-            <div class="form-group">
-              <label>Liter</label>
-              <p>...</p>
-            </div>
-          </div>
-
-          <div class="col-xs-3">
-            <div class="form-group">
-              <label>Bayar</label>
-              <p>...</p>
-            </div>
-          </div>
-
-          <div class="col-xs-6">
-            <div class="form-group">
-              <label>Dibuat</label>
-              <p>...</p>
-            </div>
-          </div>
-          <div class="col-xs-6">
-            <div class="form-group">
-              <label>Oleh</label>
-              <p>...</p>
-            </div>
-          </div>
+          <div class="col-xs-12">No :</div>
+          <div class="col-xs-12">Sudah diterima dari :</div>
         </div>
       </div>
 
-      <div class="col-xs˜-5">
-        <div class="form-group">
-          <label>Rupiah</label>
-          <p>...</p>
+      <div class="col-xs-6">
+        <div class="row">
+          <div class="col-xs-12"><%= jual.kd %></div>
+          <div class="col-xs-12"><div class="alert alert-bw-skinny" role="alert"><%= jual.kd_instansi+` - `+jual.nm_instansi %></div></div>
         </div>
       </div>
 
-    </div>-->
+    </div>
 
     <div class="row">
       <div class="col-xs-12">
-        <table class="table table-striped">
+        <table id="tdetail" class="table table-striped outer-border mini-pad">
           <thead>
             <tr>
-              <th class="text-center" colspan="5">U R A I A N</th>
-              <th class="text-center" conspan="2">U A N G</th>
+              <th class="text-center f-12" colspan="6">U R A I A N</th>
+              <th class="text-center f-12 left-border" colspan="2">U A N G</th>
             </tr>
           </thead>
           <tbody>
-            <% let t_bbm = '', lembar = 0, liter = 0, rupiah = 0;
-            for (let i=0; i<det_jual.length; i++) {
-              lembar += det_jual[i].lembar;
-              liter += det_jual[i].liter;
-              rupiah += det_jual[i].rupiah;
-              %>
-              <tr>
-              <% if (t_bbm != det_jual[i].nm_bbm) {
-                t_bbm = det_jual[i].nm_bbm; %>
-                <td><%= t_bbm %></td>
-              <% } else { %>
-                <td></td>
-              <% } %>
-              <td class="text-center"><%= det_jual[i].jenis %></td>
-              <td class="text-right"><%= det_jual[i].lembar %></td>
-              <td class="text-center"><%= det_jual[i].kupon_awal+` - `+(det_jual[i].kupon_awal + det_jual[i].lembar - 1) %></td>
-              <td class="text-right"><%= det_jual[i].liter %></td>
-              <td class="text-right"><%= det_jual[i].rupiah.toLocaleString(['ban', 'id']) %></td></tr>
-            <% } %>
-            <tr>
-              <th></th>
-              <th></th>
-              <th class="text-right"><%= lembar %></th>
-              <th></th>
-              <th class="text-right"><%= liter %></th>
-              <th class="text-right"><%= rupiah.toLocaleString(['ban', 'id']) %></th>
-            </tr>
           </tbody>
         </table>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col-xs-12 f-12">Cilacap, &nbsp; <%= jual.s_tanggal %></div>
+      
+      <div class="col-xs-12 f-12 signature text-right">H. BUDI SADEWO, S.H., M.Kn.</div>
+    </div>
+
   </div>
 </body>
+
+<script>
+  let jual = JSON.parse((`<%= JSON.stringify(jual) %>`).replace(/&quot;/g, '"'));
+  let det_jual = JSON.parse((`<%= JSON.stringify(det_jual) %>`).replace(/&quot;/g, '"'));
+  
+  $(document).ready(function() {
+    let t_html = '', liter = 0, rupiah = 0;
+    t_html += `<tr><td class="text-center" colspan="6">Pembelian kupon di SPBU `+jual.kd_pertamina+` `+jual.alias+` berupa :</td><td class="left-border" colspan="2"></td></tr>`;
+
+    for (let i=0; i<det_jual.length; i++) {
+      liter += det_jual[i].liter;
+      rupiah += det_jual[i].rupiah;
+      t_html += `<tr>
+          <td class="text-right fit">`+det_jual[i].liter+`</td>
+          <td>Ltr `+det_jual[i].nm_bbm+`</td>
+          <td>@ `+det_jual[i].jenis+`</td>
+          <td class="fit">Rp</td>
+          <td class="text-right fit">`+det_jual[i].harga.toLocaleString(['ban', 'id'])+`</td>
+          <td class="text-center">( `+det_jual[i].kupon_awal+` - `+(det_jual[i].kupon_awal + det_jual[i].lembar - 1)+` )</td>
+        
+          <td class="fit left-border">Rp</td>
+          <td class="text-right fit">`+det_jual[i].rupiah.toLocaleString('id-ID')+`</td>
+        </tr>`;
+    }
+    t_html += `<tr class="f-12">
+        <th class="text-right">`+liter+`</th>
+        <th class="text-right" colspan="5">JUMLAH PEMBAYARAN</th>
+        <th class="left-border">Rp</th><th class="text-right">`+rupiah.toLocaleString('id-ID')+`</th>
+      </tr><tr>
+        <th class="text-center f-12" colspan="8">`+js_fun.terbilang(rupiah).toUpperCase()+`</th>
+      </tr>`;
+    
+    $('#tdetail tbody').html(t_html);
+
+    window.print();
+  });
+</script>
