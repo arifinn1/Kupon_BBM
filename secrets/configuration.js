@@ -3,11 +3,18 @@ function clearArray(arr) {
 }
 
 module.exports = {
-  database: {
+  database2: {
     user    : 'postgres',
     host    : 'localhost',
     database: 'gelora',
     password: 'arifin',
+    port    : 5432
+  },
+  database: {
+    user    : 'postgres',
+    host    : 'geloragroup.com',
+    database: 'k_bbm',
+    password: 'G3lora!',
     port    : 5432
   },
   secretKey: 'arifin123',
