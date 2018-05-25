@@ -5,7 +5,7 @@ const passport = require('passport');
 const config = require('../secrets/configuration');
 
 router.get('/', index);
-router.get('/:tgl', index);
+router.get('/tgl_:tgl', index);
 
 function index(req, res, next) {
   if (!req.isAuthenticated()) {
@@ -31,7 +31,8 @@ function index(req, res, next) {
 
         let spbu = await pool.query(`SELECT * FROM spbu WHERE alias!=''`);
         let instansi = await pool.query('SELECT * FROM instansi');
-        let jual = await pool.query(`SELECT j.*, to_char(j.tanggal, 'DD-MM-YY HH24:MI') as s_tanggal, to_char(j.dibuat, 'DD-MM-YY HH24:MI') as s_dibuat, s.alias, s.nama as nm_spbu, i.nama as nm_instansi, a.nama as nm_akun FROM jual j, spbu s, instansi i, akun a WHERE j.kd_spbu=s.kd AND j.kd_instansi=i.dc AND j.oleh=a.kd AND to_char(j.tanggal, 'YYYY-MM-DD')=`+(tgl != '' ? `'`+tgl+`'` : `to_char(NOW(), 'YYYY-MM-DD')`));
+        let que = `SELECT j.*, to_char(j.tanggal, 'DD-MM-YY HH24:MI') as s_tanggal, to_char(j.dibuat, 'DD-MM-YY HH24:MI') as s_dibuat, s.alias, s.nama as nm_spbu, i.nama as nm_instansi, a.nama as nm_akun FROM jual j, spbu s, instansi i, akun a WHERE j.kd_spbu=s.kd AND j.kd_instansi=i.dc AND j.oleh=a.kd AND to_char(j.tanggal, 'YYYY-MM-DD')=`+(tgl != '' ? `'`+tgl+`'` : `to_char(NOW(), 'YYYY-MM-DD')`);
+        let jual = await pool.query(que);
         
         config.clearArray(config.active);
         config.active.jual = "active";
@@ -48,7 +49,7 @@ function index(req, res, next) {
           instansi        : instansi.rows,
           bbm             : c_harga,
           jual            : jual.rows,
-          tgl             : tgl,
+          tgl             : tgl
         });
       } catch(e) {
         throw e;      
@@ -93,17 +94,18 @@ router.post('/', (req, res, next) => {
 
           await pool.query('DELETE FROM det_jual WHERE kd_jual=$1', [kd]);
 
-          let kupon = await pool.query('SELECT d.kd_bbm, d.jenis, MAX(d.kupon_awal+d.lembar) AS kpn_baru FROM det_jual d, jual j WHERE d.kd_jual=j.kd AND j.kd_spbu=$1 GROUP BY d.kd_bbm, d.jenis ORDER BY d.kd_bbm, d.jenis', [jual.kd_spbu]);
+          //let kupon = await pool.query('SELECT d.kd_bbm, d.jenis, MAX(d.kupon_awal+d.lembar) AS kpn_baru FROM det_jual d, jual j WHERE d.kd_jual=j.kd AND j.kd_spbu=$1 GROUP BY d.kd_bbm, d.jenis ORDER BY d.kd_bbm, d.jenis', [jual.kd_spbu]);
 
           let det_ins_q = 'INSERT INTO det_jual (kd, kd_jual, kd_bbm, jenis, liter, lembar, kupon_awal, rupiah, harga) VALUES';          
           for (let i=0; i<jual.det.length; i++) {
-            let kpn_baru = 1;
+            let kpn_baru = jual.det[i].kupon;
+            /*let kpn_baru = 1;
             for (let j=0; j<kupon.rows.length; j++) {
               if (kupon.rows[j].kd_bbm == jual.det[i].kd_bbm && kupon.rows[j].jenis == jual.det[i].jenis) {
                 kpn_baru = kupon.rows[j].kpn_baru;
                 break;
               }
-            }
+            }*/
             
             det_ins_q += (i > 0 ? ',' : '')+` (`+(jual.det[i].kd != '' ? jual.det[i].kd : det_kd++)+`, `+kd+`, `+jual.det[i].kd_bbm+`, `+jual.det[i].jenis+`, `+jual.det[i].liter+`, `+jual.det[i].lembar+`, `+kpn_baru+`, `+jual.det[i].rupiah+`, `+jual.det[i].harga+`)`;
           }

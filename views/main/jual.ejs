@@ -278,13 +278,20 @@
             </div>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-1">
             <div class="form-group">
               <input type="hidden" id="lembar">
-              <input type="hidden" id="kupon">
-              <label><span id="lb-valid">Lembar</span>, Kupon Awal</label>
+              <label id="lb-valid">Lembar</label>
               <input type="hidden" id="valid-ltr" name="valid-ltr">
-              <p class="up"><span id="txt-lembar">...</span>, <span id="txt-kupon">...</span></p>
+              <p class="up" id="txt-lembar">...</p>
+            </div>
+          </div>
+
+          <div class="col-md-2">
+            <div class="form-group">
+              <input type="hidden" id="kupon">
+              <label>Kupon Awal</label>
+              <input type="number" class="form-control" name="ekupon" id="ekupon" required>
             </div>
           </div>
 
@@ -351,7 +358,7 @@
 
     $('#tgl').on('dp.change', function() {
       $('#tgl').data('DateTimePicker').format('YYYY-MM-DD');
-      window.location.href = '/jual/'+$("input[name=tgl]").val();
+      window.location.href = '/jual/tgl_'+$("input[name=tgl]").val();
     });
 
     $('#notnow').click(function() {
@@ -372,9 +379,18 @@
       cekKupon();
     });
 
-    $("#dliter").keyup(function(e){ 
+    $('#dliter').keyup(function(e){ 
       var code = e.which;
       if (code==13) addKupon();
+    });
+
+    $('#ekupon').focusout(function() {
+      var min = $(this).attr('min')
+        val = $(this).val();
+      
+      if (val != '') {
+        if (parseInt(val) < parseInt(min)) $(this).val(min);
+      }
     });
 
     setInterval(function(){
@@ -463,6 +479,7 @@
         if (data.res == 'SUKSES') {
           window.open('/jual/cetak/'+data.data.kd);
           reloadTampilan(data.op, data.data);
+          getKodeKupon();
         }
       }).fail(function (jqXHR, textStatus) {
         if(confirm('Simpan data gagal, coba lagi?')){ simpan(); }
@@ -487,6 +504,7 @@
         if (data.res == 'SUKSES') {
           tjual.row(active_row).remove().draw();
           active_row = null;
+          getKodeKupon();
           js_fun.show_notif('<strong>Sukses!</strong> Data berhasil dihapus.', 'success');
         }else{ js_fun.show_notif('<strong>Gagal!</strong> Data gagal dihapus.', 'warning'); }
       }).fail(function (jqXHR, textStatus) {
@@ -645,7 +663,8 @@
       }
 
       $('#kupon').val(ret);
-      $('#txt-kupon').html(ret);
+      $('#ekupon').val(ret);
+      $('#ekupon').attr('min', ret);
     }
       
     let isEx = isExist($('#kd_bbm').val(), $('#jenis').val());
@@ -704,7 +723,8 @@
     $('#lembar').val(lembar);
     $('#txt-lembar').html(lembar);
     $('#kupon').val(kupon);
-    $('#txt-kupon').html(kupon);
+    $('#ekupon').val(kupon);
+    $('#ekupon').attr('min', kupon);
     $('#drupiah').val(drupiah);
     $('#txt-drupiah').html(drupiah.toLocaleString(['ban', 'id']));
 
@@ -740,7 +760,7 @@
         jenis: $('#jenis').val(),
         liter: parseInt($('#dliter').val()),
         lembar: parseInt($('#lembar').val()),
-        kupon: parseInt($('#kupon').val()),
+        kupon: parseInt($('#ekupon').val()),
         rupiah: parseInt($('#drupiah').val()),
         harga: parseInt($('#harga').val())
       };
