@@ -93,7 +93,7 @@
               <div class="col-md-5">
                 <div class="form-group">
                   <label>SPBU</label>
-                  <select class="form-control" id="kd_spbu" name="kd_spbu" data-live-search="true" required>
+                  <select class="form-control" id="kd_spbu" name="kd_spbu" onchange="getKodeKupon()" data-live-search="true" required>
                     <% for (var i=0; i<spbu.length; i++) { %>
                       <option value="<%= spbu[i].kd %>">SPBU <%= spbu[i].kd_pertamina+' - SPBU '+spbu[i].alias %></option>
                     <% } %>
@@ -477,9 +477,9 @@
         }
 
         if (data.res == 'SUKSES') {
-          window.open('/jual/cetak/'+data.data.kd);
           reloadTampilan(data.op, data.data);
           getKodeKupon();
+          window.open('/jual/cetak/'+data.data.kd);
         }
       }).fail(function (jqXHR, textStatus) {
         if(confirm('Simpan data gagal, coba lagi?')){ simpan(); }
