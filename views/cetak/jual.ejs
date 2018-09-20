@@ -68,13 +68,16 @@
     for (let i=0; i<det_jual.length; i++) {
       liter += det_jual[i].liter;
       rupiah += det_jual[i].rupiah;
+      let n_kupon = det_jual[i].kupon_awal + det_jual[i].lembar - 1;
+      n_kupon = n_kupon>10000 ? n_kupon - 10000 : n_kupon;
+
       t_html += `<tr>
           <td class="text-right fit">`+det_jual[i].liter+`</td>
           <td>Ltr `+det_jual[i].nm_bbm+`</td>
           <td>@ `+det_jual[i].jenis+`</td>
           <td class="fit">Rp</td>
           <td class="text-right fit">`+det_jual[i].harga.toLocaleString(['ban', 'id'])+`</td>
-          <td class="text-center">( `+det_jual[i].kupon_awal+` - `+(det_jual[i].kupon_awal + det_jual[i].lembar - 1)+` )</td>
+          <td class="text-center">( `+det_jual[i].kupon_awal+` - `+n_kupon+` )</td>
         
           <td class="fit left-border">Rp</td>
           <td class="text-right fit">`+det_jual[i].rupiah.toLocaleString('id-ID')+`</td>

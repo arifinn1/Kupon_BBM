@@ -290,6 +290,7 @@
           <div class="col-md-2">
             <div class="form-group">
               <input type="hidden" id="kupon">
+              <input type="hidden" id="s_kupon">
               <label>Kupon Awal</label>
               <input type="number" class="form-control" name="ekupon" id="ekupon" required>
             </div>
@@ -552,7 +553,7 @@
         <td class="text-right">`+tdetjual[i].rupiah.toLocaleString(['ban', 'id'])+`</td>
         <td class="text-right pad-btn">
           `+($('#okd').val() == '' ? `<div class="btn-group">
-            <button type="button" class="btn btn-sm btn-info" onclick="clearKupon(`+i+`, '`+tdetjual[i].kd+`', `+tdetjual[i].kd_bbm+`, `+tdetjual[i].jenis+`, `+tdetjual[i].liter+`, `+tdetjual[i].lembar+`, `+tdetjual[i].kupon_awal+`, `+tdetjual[i].rupiah+`, true)"><i class="fa fa-pencil"></i></button>
+            <button type="button" class="btn btn-sm btn-info" onclick="clearKupon(`+i+`, '`+tdetjual[i].kd+`', `+tdetjual[i].kd_bbm+`, `+tdetjual[i].jenis+`, `+tdetjual[i].liter+`, `+tdetjual[i].lembar+`, `+tdetjual[i].kupon+`, `+tdetjual[i].s_kupon+`, `+tdetjual[i].rupiah+`, true)"><i class="fa fa-pencil"></i></button>
             <button type="button" class="btn btn-sm btn-warning" onclick="hapus(`+i+`, '`+tdetjual[i].nm_bbm+`', '`+tdetjual[i].jenis+`')"><i class="fa fa-trash"></i></button>
           </div>` : '')+`
         </td></tr>`;
@@ -571,12 +572,14 @@
         lembar += tdetjual[i].lembar;
         liter += tdetjual[i].liter;
         rupiah += tdetjual[i].rupiah;
+        let n_kupon = tdetjual[i].kupon + tdetjual[i].lembar - 1;
+        n_kupon = n_kupon > 10000 ? n_kupon - 10000 : n_kupon;
 
         t_html += `<tr><td>`+(i+1)+`.</td>
         <td>`+tdetjual[i].nm_bbm+`</td>
         <td class="text-center">`+tdetjual[i].jenis+`</td>
         <td class="text-right">`+tdetjual[i].lembar+`</td>
-        <td class="text-center">`+tdetjual[i].kupon+` - `+(tdetjual[i].kupon + tdetjual[i].lembar - 1)+`</td>
+        <td class="text-center">`+tdetjual[i].kupon+` - `+n_kupon+`</td>
         <td class="text-right">`+tdetjual[i].liter+`</td>
         <td class="text-center">`+tdetjual[i].harga.toLocaleString(['ban', 'id'])+`</td>
         <td class="text-right">`+tdetjual[i].rupiah.toLocaleString(['ban', 'id'])+`</td></tr>`;
@@ -610,6 +613,7 @@
           liter: data[i].liter,
           lembar: data[i].lembar,
           kupon: data[i].kupon_awal,
+          s_kupon: data[i].s_kupon,
           rupiah: data[i].rupiah,
           harga: data[i].harga
         });
@@ -652,16 +656,19 @@
   function getKuponAwal() {
     if ($('#jenis').val() != '' && $('#det_kd').val() == '') {
       let ret = 1,
+        s_kupon = 1,
         kd_bbm = $('#kd_bbm').val(),
         jenis = $('#jenis').val();
       
       for (var i=0; i<tkodekupon.length; i++) {
         if (tkodekupon[i].kd_bbm == kd_bbm && tkodekupon[i].jenis == jenis) {
           ret = tkodekupon[i].kpn_baru;
+          s_kupon = tkodekupon[i].s_kupon;
           break;
         }
       }
 
+      $('#s_kupon').val(s_kupon);
       $('#kupon').val(ret);
       $('#ekupon').val(ret);
       $('#ekupon').attr('min', ret);
@@ -670,7 +677,7 @@
     let isEx = isExist($('#kd_bbm').val(), $('#jenis').val());
     if (isEx > -1 && isEx != $('#idx').val()) {
       if(confirm($('#kd_bbm').val()+' telah ditambahkan, lakukan edit pada data tersebut ?')){
-        clearKupon(isEx, tdetjual[isEx].kd, tdetjual[isEx].kd_bbm, tdetjual[isEx].jenis, tdetjual[isEx].liter, tdetjual[isEx].lembar, tdetjual[isEx].kupon, tdetjual[isEx].rupiah, false);
+        clearKupon(isEx, tdetjual[isEx].kd, tdetjual[isEx].kd_bbm, tdetjual[isEx].jenis, tdetjual[isEx].liter, tdetjual[isEx].lembar, tdetjual[isEx].kupon, tdetjual[isEx].s_kupon, tdetjual[isEx].rupiah, false);
       } else {
         $('#jenis').val('');
       }
@@ -705,6 +712,7 @@
         data: { spbu: $('#kd_spbu').val() }
       }).done(function(data) {
         tkodekupon = data;
+        console.log(data);
       }).fail(function (jqXHR, textStatus) {
         if(confirm('Ambil kode kupon gagal, coba lagi?')){ getKodeKupon(); }
       }).always(function () {
@@ -713,7 +721,7 @@
     }
   }
 
-  function clearKupon(idx, det_kd, kd_bbm, jenis, dliter, lembar, kupon, drupiah, show) {
+  function clearKupon(idx, det_kd, kd_bbm, jenis, dliter, lembar, kupon, s_kupon, drupiah, show) {
     $('#idx').val(idx);
     $('#det_kd').val(det_kd);
     $('#kd_bbm').val(kd_bbm);
@@ -723,6 +731,7 @@
     $('#lembar').val(lembar);
     $('#txt-lembar').html(lembar);
     $('#kupon').val(kupon);
+    $('#s_kupon').val(s_kupon);
     $('#ekupon').val(kupon);
     $('#ekupon').attr('min', kupon);
     $('#drupiah').val(drupiah);
@@ -761,6 +770,7 @@
         liter: parseInt($('#dliter').val()),
         lembar: parseInt($('#lembar').val()),
         kupon: parseInt($('#ekupon').val()),
+        s_kupon: parseInt($('#s_kupon').val()),
         rupiah: parseInt($('#drupiah').val()),
         harga: parseInt($('#harga').val())
       };
@@ -773,17 +783,20 @@
         tdetjual[t_arr.idx] = t_arr;
       }
 
+      let n_kupon = t_arr.kupon + t_arr.lembar - 1;
+      n_kupon = n_kupon > 10000 ? n_kupon - 10000 : n_kupon;
+
       let txt_html = `<td>`+(t_arr.idx+1)+`.</td>
         <td>`+$("#kd_bbm option:selected").text()+`</td>
         <td class="text-center">`+t_arr.jenis+`</td>
         <td class="text-right">`+t_arr.lembar+`</td>
-        <td class="text-center">`+t_arr.kupon+` - `+(t_arr.kupon + t_arr.lembar - 1)+`</td>
+        <td class="text-center">`+t_arr.kupon+` - `+n_kupon+`</td>
         <td class="text-right">`+t_arr.liter+`</td>
         <td class="text-center">`+t_arr.harga.toLocaleString(['ban', 'id'])+`</td>
         <td class="text-right">`+t_arr.rupiah.toLocaleString(['ban', 'id'])+`</td>
         <td class="text-right pad-btn">
           <div class="btn-group">
-            <button type="button" class="btn btn-sm btn-info" onclick="clearKupon(`+t_arr.idx+`, '`+t_arr.kd+`', `+t_arr.kd_bbm+`, `+t_arr.jenis+`, `+t_arr.liter+`, `+t_arr.lembar+`, `+t_arr.kupon+`, `+t_arr.rupiah+`, true)"><i class="fa fa-pencil"></i></button>
+            <button type="button" class="btn btn-sm btn-info" onclick="clearKupon(`+t_arr.idx+`, '`+t_arr.kd+`', `+t_arr.kd_bbm+`, `+t_arr.jenis+`, `+t_arr.liter+`, `+t_arr.lembar+`, `+t_arr.kupon+`, `+t_arr.s_kupon+`, `+t_arr.rupiah+`, true)"><i class="fa fa-pencil"></i></button>
             <button type="button" class="btn btn-sm btn-warning" onclick="hapusKupon(`+t_arr.idx+`, '`+$("#kd_bbm option:selected").text()+`', '`+t_arr.jenis+`')"><i class="fa fa-trash"></i></button>
           </div>
         </td>`;

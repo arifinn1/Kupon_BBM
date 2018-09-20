@@ -1,0 +1,303 @@
+<% layout('layout') -%>
+
+<section class="content">
+  <div class="row">
+    <% if (typeof c_seting.exp_bulan !== 'undefined') { %>
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-green"><i class="fa fa-clock-o"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">EXP Bulan</span>
+            <span class="info-box-number info-box-big"><%= c_seting.exp_bulan %> <small>bln</small></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-teal"><i class="fa fa-ticket"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">EXP Kupon</span>
+            <span class="info-box-number info-box-big"><%= c_seting.exp_kupon %> <small>bln</small></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-blue"><i class="fa fa-check"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">Persen</span>
+            <span class="info-box-number info-box-big"><%= c_seting.persen %> <small>%</small></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-yellow"><i class="fa fa-scissors"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">Reduksi</span>
+            <span class="info-box-number info-box-big"><%= c_seting.reduksi %> <small>rupiah</small></span>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <div class="col-xs-12">
+
+      <div class="box" id="box-tseting">
+        <div class="box-header">
+          <h3 class="box-title">Data Seting</h3>
+        </div>
+        <div class="box-body">
+          <div id="alert-view"></div>
+          <table id="tseting" class="display" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>Kd</th>
+                <th>Berlaku</th>
+                <th>EXP Bulan</th>
+                <th>EXP Kupon</th>
+                <th>Persen</th>
+                <th>Reduksi</th>
+                <th>Dibuat</th>
+                <th>Oleh</th>
+                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="clearInput('', new Date(), '', '', '', '', '', '', true)"><i class="fa fa-plus"></i></button></th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>Kd</th>
+                <th>Berlaku</th>
+                <th>EXP Bulan</th>
+                <th>EXP Kupon</th>
+                <th>Persen</th>
+                <th>Reduksi</th>
+                <th>Dibuat</th>
+                <th>Oleh</th>
+                <th></th>
+              </tr>
+            </tfoot>
+            <tbody>
+              <% for (var i=0; i<seting.length; i++) { %>
+                <tr>
+                  <td><%= seting[i].kd %></td>
+                  <td><%= seting[i].s_berlaku %></td>
+                  <td><%= seting[i].exp_bulan %></td>
+                  <td><%= seting[i].exp_kupon %></td>
+                  <td><%= seting[i].persen %></td>
+                  <td><%= seting[i].reduksi %></td>
+                  <td><%= seting[i].s_dibuat %></td>
+                  <td><%= seting[i].nm_oleh %></td>
+                  <td>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= seting[i].kd %>', new Date('<%= seting[i].berlaku %>'), '<%= seting[i].exp_bulan %>', '<%= seting[i].exp_kupon %>', '<%= seting[i].persen %>', '<%= seting[i].reduksi %>', '<%= seting[i].s_dibuat %>', '<%= seting[i].nm_oleh %>', true)"><i class="fa fa-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= seting[i].kd %>', '<%= seting[i].s_berlaku %>', '<%= seting[i].persen %>', '<%= seting[i].reduksi %>')"><i class="fa fa-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="box" id="box-seting">
+        <div class="box-header">
+          <h3 class="box-title">Kelola Seting</h3>
+        </div>
+        <form id="form-seting" onsubmit="return simpan()">
+          <div class="box-body">
+            <div id="alert-input"></div>
+            <div class="row">
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Berlaku</label>
+                  <input type="hidden" name="kd" id="kd">
+                  <div class="input-group date" id="berlaku">
+                    <input type="text" class="form-control" name="berlaku" readonly/>
+                    <span class="input-group-addon">
+                      <i class="fa fa-calendar"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>EXP Bulan</label>
+                  <input type="number" class="form-control" placeholder="EXP Bulan" name="exp_bulan" id="exp_bulan" min="0" max="12" required>
+                </div>
+              </div>
+
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>EXP Kupon</label>
+                  <input type="number" class="form-control" placeholder="EXP Kupon" name="exp_kupon" id="exp_kupon" min="0" max="12" required>
+                </div>
+              </div>
+
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>Persen</label>
+                  <input type="number" class="form-control" placeholder="Persen" name="persen" id="persen" min="0" max="100" required>
+                </div>
+              </div>
+
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>Reduksi</label>
+                  <input type="number" class="form-control" placeholder="Reduksi" name="reduksi" id="reduksi" min="0" max="10000" required>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Dibuat, Oleh</label>
+                  <p class="up"><span id="txt-dibuat">...</span>, <span id="txt-oleh">...</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="box-footer">
+            <button type="submit" class="btn btn-primary btn-sm"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
+            <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', new Date(), '', '', '', '', '', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  $(document).ready(function() {
+    tseting = $('#tseting').DataTable({
+      columns: [
+        { data: 'kd', visible: false },
+        { data: 's_berlaku' },
+        { data: 'exp_bulan' },
+        { data: 'exp_kupon' },
+        { data: 'persen' },
+        { data: 'reduksi' },
+        { data: 's_dibuat' },
+        { data: 'nm_oleh' },
+        { data: 'tombol', className: 'text-right has-button', orderable: false }
+      ],
+      order: [[ 1, "desc" ]]
+    });
+
+    $('#berlaku').datetimepicker({
+			viewMode: 'days',
+			format: 'DD MMM YYYY - HH:mm',
+			date: new Date(),
+			ignoreReadonly: true
+		});
+
+    $('#tseting tbody').on( 'click', 'div.btn-group', function () {
+      active_row = $(this).parents('tr');
+    });
+  });
+
+  $('#box-seting').hide();
+  var tseting, active_row;
+
+  function clearInput(kd, berlaku, exp_bulan, exp_kupon, persen, reduksi, dibuat, oleh, show) {
+    if (show) {
+      $('#box-tseting').slideUp('fast', function() {
+        $('#box-seting').slideDown('fast');
+        $('#exp_bulan').focus();
+      });
+    } else {
+      $('#box-seting').slideUp('fast', function() {
+        $('#box-tseting').slideDown('fast');
+      });
+    }
+    
+    $('#kd').val(kd);
+    $('#berlaku').data("DateTimePicker").date(berlaku);
+    $('#exp_bulan').val(exp_bulan);
+    $('#exp_kupon').val(exp_kupon);
+    $('#persen').val(persen);
+    $('#reduksi').val(reduksi);
+
+    $('#txt-dibuat').html(dibuat);
+    $('#txt-oleh').html(oleh);
+  }
+
+  function simpan() {
+    $('#berlaku').data('DateTimePicker').format('YYYY-MM-DD HH:mm:ss');
+    $("#box-seting").LoadingOverlay('show');
+    $.ajax({
+      type: 'POST',
+      url: '/seting',
+      data: $('#form-seting').serialize()
+    }).done(function(data) {
+      $('#berlaku').data('DateTimePicker').format('DD MMM YYYY - HH:mm');
+      if (data.res == 'SUKSES') {
+        if (data.op == 'BARU') {
+          js_fun.show_notif('<strong>Sukses!</strong> Data baru telah berhasil tersimpan.', 'success');
+        } else {
+          js_fun.show_notif('<strong>Sukses!</strong> Data telah berhasil dirubah.', 'success');
+        }
+      } else {
+        js_fun.show_notif('<strong>Gagal!</strong> Koneksi bermasalah.', 'warning');
+      }
+
+      if (data.res == 'SUKSES') {
+        reloadTampilan(data.op, data.data);
+      }
+    }).fail(function (jqXHR, textStatus) {
+      if(confirm('Simpan data gagal, coba lagi?')){ simpan(); }
+    }).always(function () {
+      $('#box-seting').LoadingOverlay('hide', true);
+    });
+    return false;
+  }
+
+  function hapus(kd, berlaku, persen, reduksi) {
+    if(confirm('Yakin ingin menghapus pengaturan pada tgl '+berlaku+' untuk '+persen+'% penukaran dengan reduksi '+reduksi+' rupiah ?')){
+      $('#box-tseting .box-body').LoadingOverlay('show');
+      jQuery.ajax({
+        type: 'DELETE',
+        url: '/seting',
+        data: { kd: kd }
+      }).done(function(data) {
+        if (data.res == 'SUKSES') {
+          tseting.row(active_row).remove().draw();
+          active_row = null;
+          js_fun.show_notif('<strong>Sukses!</strong> Data berhasil dihapus.', 'success');
+        }else{ js_fun.show_notif('<strong>Gagal!</strong> Data gagal dihapus.', 'warning'); }
+      }).fail(function (jqXHR, textStatus) {
+        if(confirm('Hapus data gagal, coba lagi?')){ hapus(kd, berlaku, persen, reduksi); }
+      }).always(function () {
+        $('#box-tseting .box-body').LoadingOverlay('hide', true);
+      });
+    }
+  }
+
+  function reloadTampilan(op, data) {
+    var data = {
+      kd        : data.kd,
+      s_berlaku : data.s_berlaku,
+      exp_bulan : data.exp_bulan,
+      exp_kupon : data.exp_kupon,
+      persen    : data.persen,
+      reduksi   : data.reduksi,
+      s_dibuat  : data.s_dibuat,
+      nm_oleh   : data.nm_oleh,
+      tombol    : `<div class="btn-group">
+        <button type="button" class="btn btn-sm btn-info" onclick="clearInput('`+data.kd+`', new Date('`+data.berlaku+`'), '`+data.exp_bulan+`', '`+data.exp_kupon+`', '`+data.persen+`', '`+data.reduksi+`', '`+data.s_dibuat+`', '`+data.nm_oleh+`', true)"><i class="fa fa-pencil"></i></button>
+        <button type="button" class="btn btn-sm btn-warning" onclick="hapus('`+data.kd+`', '`+data.s_berlaku+`', '`+data.persen+`', '`+data.reduksi+`')"><i class="fa fa-trash"></i></button>
+      </div>`
+    };
+    
+    if (op=='UBAH') { tseting.row(active_row).remove().draw(); }
+    tseting.row.add(data).draw();
+    active_row = null;
+
+    clearInput('', new Date(), '', '', '', '', '', false);
+  }
+</script>

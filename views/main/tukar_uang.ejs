@@ -1,0 +1,828 @@
+<% layout('layout') -%>
+
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+
+      <div class="box" id="box-ttukar">
+        <div class="box-header with-border">
+          <h3 class="box-title">Tukar Uang</h3>
+          
+          <div class="box-tools">
+            <div class="input-group input-group-sm date" id="tgl" style="width: 150px;" >
+              <input type="text" class="form-control" name="tgl" readonly/>
+              <span class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="box-body">
+          <div id="alert-view"></div>
+          <table id="ttukar" class="display" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>Kode</th>
+                <th>SPBU</th>
+                <th>Instansi</th>
+                <th>Tanggal</th>
+                <th>Persen</th>
+                <th>Reduksi</th>
+                <th>Rupiah</th>
+                <th>Dibuat</th>
+                <th>Oleh</th>
+                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="clearInput('', new Date(), '', '', '', '', '<%= nama_user %>', true)"><i class="fa fa-plus"></i></button></th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>Kode</th>
+                <th>SPBU</th>
+                <th>Instansi</th>
+                <th>Tanggal</th>
+                <th>Persen</th>
+                <th>Reduksi</th>
+                <th>Rupiah</th>
+                <th>Dibuat</th>
+                <th>Oleh</th>
+                <th></th>
+              </tr>
+            </tfoot>
+            <tbody>
+              <% for (var i=0; i<tukar.length; i++) { %>
+                <tr>
+                  <td><button type="button" class="btn btn-sm btn-info" onclick="showDetail('<%= tukar[i].kd %>', '<%= tukar[i].s_tanggal %>', '<%= tukar[i].nm_instansi %>', '<%= tukar[i].alias %>')"><%= tukar[i].kd %></button></td>
+                  <td><%= tukar[i].alias %></td>
+                  <td><%= tukar[i].nm_instansi %></td>
+                  <td><%= tukar[i].s_tanggal %></td>
+                  <td><%= tukar[i].persen %></td>
+                  <td><%= tukar[i].reduksi %></td>
+                  <td><%= tukar[i].rupiah %></td>
+                  <td><%= tukar[i].s_dibuat %></td>
+                  <td><%= tukar[i].nm_akun %></td>
+                  <td>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= tukar[i].kd %>', new Date('<%= tukar[i].tanggal %>'), '<%= tukar[i].persen %>', '<%= tukar[i].reduksi %>', '<%= tukar[i].rupiah %>', '<%= tukar[i].dibuat %>', '<%= tukar[i].nm_akun %>', true)"><i class="fa fa-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= tukar[i].kd %>', '<%= tukar[i].s_tanggal %>', '<%= tukar[i].nm_instansi %>', '<%= tukar[i].alias %>')"><i class="fa fa-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="box" id="box-tukar">
+        <div class="box-header with-border">
+          <h3 class="box-title">Nota Jual</h3>
+        </div>
+        <form id="form-tukar" method="post" action="/tukar_uang" onsubmit="return simpan()">
+          <div class="box-body">
+            <div id="alert-input"></div>
+            <div class="row">
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Kode</label>
+                  <input type="hidden" name="okd" id="okd">
+                  <input type="hidden" name="skd" id="skd">
+                  <div class="input-group">
+                    <input type="number" class="form-control" placeholder="Kode" name="kd" id="kd">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" type="button" onclick="cari_kd()">Cari</button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>SPBU</label>
+                  <p class="up" id="txt-spbu">...</p>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Instansi</label>
+                  <p class="up" id="txt-instansi">...</p>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Tanggal</label>
+                  <p class="up" id="txt-jtanggal">...</p>
+                </div>
+              </div>
+
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>Liter</label>
+                  <input type="hidden" name="liter" id="liter">
+                  <p class="up" id="txt-liter">...</p>
+                </div>
+              </div>
+
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>Bayar</label>
+                  <p class="up" id="txt-bayar">...</p>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Rupiah</label>
+                  <p class="up" id="txt-jrupiah">...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="box-header with-border">
+            <h3 class="box-title">Transaksi Penukaran</h3>
+          </div>
+          
+          <div class="box-body">
+            <div class="row">              
+              <div class="col-md-7">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label><input type="checkbox" id="notnow" name="notnow"> Tanggal</label>
+                      <div class="input-group date" id="tanggal" >
+                        <input type="text" class="form-control" name="tanggal" readonly/>
+                        <span class="input-group-addon">
+                          <i class="fa fa-calendar"></i>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label>Persen</label>
+                      <input type="hidden" name="persen" id="persen">
+                      <p class="up" id="txt-persen">...</p>
+                    </div>
+                  </div>
+
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label>Reduksi</label>
+                      <input type="hidden" name="reduksi" id="reduksi">
+                      <p class="up" id="txt-reduksi">...</p>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Dibuat</label>
+                      <p id="txt-dibuat">...</p>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Oleh</label>
+                      <p id="txt-oleh">...</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-5">
+                <div class="form-group">
+                  <label>Rupiah</label>
+                  <input type="hidden" id="rupiah" name="rupiah">
+                  <p class="txt-big" id="txt-rupiah">...</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="box-body no-padding">
+            <table id="tdettukar" class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th style="width: 10px">#</th>
+                  <th>BBM</th>
+                  <th class="text-center">Liter</th>
+                  <th class="text-center">Kuota (Liter)</th>
+                  <th class="text-center">Ditukar (Liter)</th>
+                  <th class="text-center">Harga</th>
+                  <th class="text-right">Rp</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="box-footer">
+            <button id="btn-simpan" type="submit" class="btn btn-primary btn-sm"><i class="fa fa-cloud"></i> &nbsp; SIMPAN</button>
+            <a id="btn-cetak" type="button" class="btn btn-success btn-sm" target="_blank"><i class="fa fa-print"></i> &nbsp; CETAK</a>
+            <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', new Date(), '', '', '', '', '<%= nama_user %>', false)"><i class="fa fa-times"></i> &nbsp; BATAL</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="modal fade" id="modal-tambah">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Tambah Tukar Kupon</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>BBM</label>
+              <input type="hidden" id="idx">
+              <input type="hidden" id="det_kd" name="det_kd">
+              <input type="hidden" id="kd_bbm" name="kd_bbm">
+              <p class="up" id="txt-bbm">...</p>
+            </div>
+          </div>
+
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Lembar</label>
+              <p class="up" id="txt-lembar">...</p>
+            </div>
+          </div>
+
+          <div class="col-md-8">
+            <div class="form-group">
+              <label>Kupon</label>
+              <p class="up" id="txt-kupon">...</p>
+            </div>
+          </div>
+
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Liter</label>
+              <input type="hidden" id="dliter" name="d_liter">
+              <p class="up" id="txt-dliter">...</p>
+            </div>
+          </div>
+
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Max Liter</label>
+              <input type="hidden" id="max_liter" name="max_liter">
+              <p class="up" id="txt-max_liter">...</p>
+            </div>
+          </div>
+
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Tukar Liter</label>
+              <input type="hidden" name="tukar_liter" id="tukar_liter">
+              <p class="up" id="txt-tukar_liter">...</p>
+            </div>
+          </div>
+
+          <div class="col-md-2">
+            <div class="form-group">
+              <label>Harga</label>
+              <input type="hidden" id="harga" name="harga">
+              <p class="up" id="txt-harga">...</p>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Rupiah</label>
+              <input type="hidden" id="drupiah" name="drupiah">
+              <p class="up" id="txt-drupiah">...</p>
+            </div>
+          </div>
+
+          <div id="det-input">
+            <div class="col-md-3">
+              <div class="form-group">
+                <label id="txt-ltr-1">... Liter</label>
+                <input type="number" class="form-control" placeholder="Lembar" id="ltr-1">
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="form-group">
+                <label id="txt-ltr-2">... Liter</label>
+                <input type="number" class="form-control" placeholder="Lembar" id="ltr-2">
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="form-group">
+                <label id="txt-ltr-3">... Liter</label>
+                <input type="number" class="form-control" placeholder="Lembar" id="ltr-3">
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="form-group">
+                <label id="txt-ltr-4">... Liter</label>
+                <input type="number" class="form-control" placeholder="Lembar" id="ltr-4">
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="addKupon()">Tambah</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<script>
+  $(document).ready(function() {
+    ttukar= $('#ttukar').DataTable({
+      columns: [
+        { data: 'kd' },
+        { data: 'nm_spbu' },
+        { data: 'nm_instansi' },
+        { data: 's_tanggal' },
+        { data: 'persen' },
+        { data: 'reduksi' },
+        { data: 'rupiah' },
+        { data: 's_dibuat' },
+        { data: 'nm_akun' },
+        { data: 'tombol', className: 'text-right has-button', orderable: false }
+      ]
+    });
+
+    $('#tanggal').datetimepicker({
+      viewMode: 'days',
+      format: 'DD MMM YYYY - HH:mm:ss',
+      date: new Date(),
+      ignoreReadonly: true
+    });
+
+    $('#tgl').datetimepicker({
+      viewMode: 'days',
+      format: 'DD MMMM YYYY',
+      date: '<%= tgl %>' == '' ? new Date() : new Date('<%= tgl %>'),
+      ignoreReadonly: true
+    });
+
+    $('#ttukar tbody').on( 'click', 'div.btn-group', function () {
+      active_row = $(this).parents('tr');
+    });
+
+    $('#tgl').on('dp.change', function() {
+      $('#tgl').data('DateTimePicker').format('YYYY-MM-DD');
+      window.location.href = '/tukar_uang/tgl_'+$("input[name=tgl]").val();
+    });
+
+    $('#notnow').click(function() {
+      now = $(this).is(':checked') ? false : true;
+    });
+
+    $("input[id^='ltr-']").focusout(function(e){
+      total_liter();
+    });
+
+    function total_liter() {
+      let liter = 0;
+      $("input[id^='ltr-']").each(function(){
+        liter += parseInt(this.value == '' ? 0 : this.value) * parseInt($(this).attr('data-liter'));
+      });
+      $('#tukar_liter').val(liter);
+      $('#txt-tukar_liter').html(liter);
+
+      return liter;
+    }
+
+    $("input[id^='ltr-']").keyup(function(e){
+      let max_liter = parseInt($('#max_liter').val()),
+        max_lembar = parseInt($(this).attr('max')),
+        liter = parseInt($(this).attr('data-liter')),
+        lembar = this.value == '' ? 0 : parseInt(this.value),
+        t_liter = total_liter(),
+        o_liter = t_liter - (liter * lembar);
+
+      if (lembar > max_lembar) {
+        this.value = max_lembar;
+        lembar = max_lembar;
+      }
+
+      if (t_liter > max_liter) {
+        this.value = Math.floor((max_liter - o_liter) / liter);
+        lembar = this.value;
+      }
+
+      var rupiah = total_liter() * parseInt($('#harga').val());
+
+      $('#drupiah').val(rupiah);
+      $('#txt-drupiah').html(rupiah.toLocaleString(['ban', 'id']));
+    });
+
+    setInterval(function(){
+      if (now) { $('#tanggal').data("DateTimePicker").date(new Date()); }
+    }, 1000);
+  });
+
+  $('#box-tukar').hide();
+  let ttukar, tdettukar = [], active_row, now = true, simpan_baru = false;
+  let seting = JSON.parse((`<%= JSON.stringify(seting) %>`).replace(/&quot;/g, '"'));
+
+  let m_rupiah = 0;
+
+  function cari_kd() {
+    var kd = $('#kd').val();
+    getDetail(kd, function(res){
+      var ex_j = typeof res.kd !== 'undefined',
+        ex_t = ex_j && res.t_tanggal != null,
+        ex_s = typeof seting.exp_bulan !== 'undefined';
+
+      $('#okd').val(ex_t ? res.kd : '');
+      $('#skd').val(ex_j ? res.kd : '');
+
+      cek_tgl(ex_j ? res.tanggal : '');
+      
+      $('#txt-spbu').html(ex_j ? res.kd_pertamina+' - '+res.alias : '');
+      $('#txt-instansi').html(ex_j ? res.nm_instansi : '');
+      $('#txt-jtanggal').html(ex_j ? res.s_tanggal : '');
+      $('#txt-liter').html(ex_j ? res.liter : '');
+      $('#txt-bayar').html(ex_j ? res.bayar : '');
+      $('#txt-jrupiah').html(ex_j ? res.rupiah : '');
+      
+      $('#notnow').prop('checked', ex_t);
+      now = !ex_t;
+      $('#tanggal').data("DateTimePicker").date(ex_t ? new Date(res.t_tanggal) : new Date());
+      $('#persen').val(ex_t ? res.persen : (ex_s ? seting.persen : 0));
+      $('#txt-persen').html(ex_t ? res.persen : (ex_s ? seting.persen : 0));
+      $('#reduksi').val(ex_t ? res.reduksi : (ex_s ? seting.reduksi : 0));
+      $('#txt-reduksi').html(ex_t ? res.reduksi : (ex_s ? seting.reduksi : 0));
+
+      $('#rupiah').val(ex_t ? res.t_rupiah : 0);
+      $('#txt-rupiah').html(ex_t ? res.t_rupiah : 0);
+      $('#txt-dibuat').html(ex_t ? js_fun.conv_date(new Date(res.t_dibuat)) : '');
+      $('#txt-oleh').html(ex_t ? res.nm_akun : '<%= nama_user %>');
+    });
+  }
+
+  function clearInput(kd, tanggal, persen, reduksi, rupiah, dibuat, nm_akun, show) {
+    $('#okd').val(kd);
+    $('#skd').val(kd);
+    $('#kd').val(kd);
+
+    $('#persen').val(persen);
+    $('#txt-persen').html(persen);
+    $('#reduksi').val(reduksi);
+    $('#txt-reduksi').html(reduksi);
+
+    $('#txt-spbu').html('');
+    $('#txt-instansi').html('');
+    $('#txt-jtanggal').html('');
+    $('#txt-liter').html('');
+    $('#txt-bayar').html('');
+    $('#txt-jrupiah').html('');
+
+    if (show) {      
+      $('#box-ttukar').slideUp('fast', function() {
+        $('#box-tukar').slideDown('fast');
+
+        tdettukar = [];
+        if (kd == ''){
+          if (typeof seting.exp_bulan !== 'undefined') {
+            $('#persen').val(seting.persen);
+            $('#txt-persen').html(seting.persen);
+            $('#reduksi').val(seting.reduksi);
+            $('#txt-reduksi').html(seting.reduksi);
+          }
+          calcTrans();
+          $('#tdettukar tbody').html('');
+        } else {
+          $('#box-tukar').LoadingOverlay('show');
+          getDetail(kd, function(res) {
+            $('#txt-spbu').html(res.kd_pertamina+' - '+res.alias);
+            $('#txt-instansi').html(res.nm_instansi);
+            $('#txt-jtanggal').html(res.s_tanggal);
+            $('#txt-liter').html(res.liter);
+            $('#txt-bayar').html(res.bayar);
+            $('#txt-jrupiah').html(res.rupiah);
+            
+            reloadDetail();
+            calcTrans();
+            $('#box-tukar').LoadingOverlay('hide', true);
+          });
+        }
+      });
+    } else {
+      $('#box-tukar').slideUp('fast', function() {
+        $('#box-ttukar').slideDown('fast');
+      });
+    }
+    
+    $('#btn-cetak').attr('href', kd == '' ? '' : '/tukar_uang/cetak/'+kd);
+    cek_tgl(dibuat);
+    
+    if (kd == '') {
+      $('#btn-cetak').hide();
+    } else {
+      $('#btn-cetak').show();
+    }
+
+    $('#notnow').prop('checked', kd != '');
+    now = kd == '';
+
+    $('#rupiah').val(rupiah);
+    $('#txt-rupiah').html(rupiah);
+    $('#tanggal').data("DateTimePicker").date(tanggal);
+    $('#txt-dibuat').html(dibuat != '' ? js_fun.conv_date(new Date(dibuat)) : '');
+    $('#txt-oleh').html(nm_akun);
+  }
+
+  function cek_tgl(tgl) {
+    if (tgl!='') {
+      let ex_s = typeof seting.exp_bulan !== 'undefined',
+        min_tgl = new Date(tgl),
+        max_tgl = new Date(tgl),
+        okd = $('#okd').val();
+
+      min_tgl.setMonth(min_tgl.getMonth() + (ex_s ? seting.exp_bulan : 0));
+      max_tgl.setMonth(max_tgl.getMonth() + (ex_s ? seting.exp_bulan + seting.exp_kupon : 0));
+      
+      simpan_baru = ex_s ? (new Date() > min_tgl && new Date() <= max_tgl && okd == '') || (okd != '') : true;
+    } else {
+      simpan_baru = false;
+    }
+
+    if (simpan_baru) {
+      $('#tdettukar button').show();
+      $('#btn-simpan').show();
+    } else {
+      $('#tdettukar button').hide();
+      $('#btn-simpan').hide();
+    }
+  }
+
+  function getDetail(kd, next) {
+    tdettukar = [];
+    $('#box-tukar').LoadingOverlay('show');
+    $.ajax({
+      type: 'GET',
+      url: '/tukar_uang/nota_jual',
+      data: { kd: (kd=='' ? 0 : kd) }
+    }).done(function(data) {
+      let t_arr = [],
+        ex_s = typeof seting.exp_bulan !== 'undefined',
+        kupon = '', t_kupon = [];
+
+      for (let i=0; i<data['det_jual'].length; i++) {
+        data['det_jual'][i].lembar = parseInt(data['det_jual'][i].lembar);
+        data['det_jual'][i].liter = parseInt(data['det_jual'][i].liter);
+
+        kupon = '';
+        for (let j=0; j<data['det_jual'][i].kupon.length; j++) {
+          t_kupon = (data['det_jual'][i].kupon[j]).split('|');
+          kupon += (j>0 ? " ; " : "")+t_kupon[0]+" liter, "+t_kupon[2];
+        }
+        data['det_jual'][i].skupon = kupon;
+
+        if (data['det_jual'][i].max_liter == null) {
+          data['det_jual'][i].max_liter = ex_s ? (data['det_jual'][i].liter/100) * seting.persen : data['det_jual'][i].liter;
+          data['det_jual'][i].harga = ex_s ? ((data['det_jual'][i].c_harga - seting.reduksi)>=0 ? data['det_jual'][i].c_harga - seting.reduksi : 0) : data['det_jual'][i].c_harga;
+          
+          let t_liter = data['det_jual'][i].max_liter,
+            r_liter = 0, kupon = [];
+          
+          for (let j=0; j<data['det_jual'][i].kupon.length; j++) {
+            kupon[j] = data['det_jual'][i].kupon[j].split('|');
+            kupon[j] = parseInt(kupon[j][0]);
+          }
+          kupon.sort(function(a, b){return b-a});
+          
+          for (let j=0; j<kupon.length; j++) {
+            r_liter += kupon[j] * Math.floor((t_liter - r_liter) / kupon[j]);
+          }
+
+          data['det_jual'][i].max_liter = r_liter;
+        } else {
+          data['det_jual'][i].s_tukar = data['det_jual'][i].s_tukar.split(';');
+        }
+
+        t_arr.push({
+          idx: i,
+          kd: data['det_jual'][i].kd,
+          kd_bbm: data['det_jual'][i].kd_bbm,
+          nm_bbm: data['det_jual'][i].nama,
+          kupon: data['det_jual'][i].kupon,
+          skupon: data['det_jual'][i].skupon,
+          lembar: data['det_jual'][i].lembar,
+          liter: data['det_jual'][i].liter,
+          max_liter: data['det_jual'][i].max_liter,
+          tukar_liter: data['det_jual'][i].tukar_liter,
+          s_tukar: data['det_jual'][i].s_tukar,
+          harga: data['det_jual'][i].harga,
+          s_harga: data['det_jual'][i].s_harga,
+          rupiah: data['det_jual'][i].rupiah
+        });
+      }
+      console.log(data);
+      
+      tdettukar = t_arr;
+      reloadDetail();
+      next(data['jual']);
+    }).fail(function (jqXHR, textStatus) {
+      if(confirm('Detail transaksi gagal ditarik, coba lagi?')){ getDetail(kd); }
+    }).always(function () {
+      $('#box-tukar').LoadingOverlay('hide', true);
+    });
+  }
+
+  function reloadTampilan(op, data) {
+    var data = {
+      kd          : `<button type="button" class="btn btn-sm btn-info" onclick="showDetail('`+data.kd+`', '`+data.s_tanggal+`', '`+data.nm_instansi+`', '`+data.alias+`')">`+data.kd+`</button>`,
+      nm_spbu     : data.alias,
+      nm_instansi : data.nm_instansi,
+      s_tanggal   : data.s_tanggal,
+      persen      : data.persen,
+      reduksi     : data.reduksi,
+      rupiah      : data.rupiah,
+      s_dibuat    : data.s_dibuat,
+      nm_akun     : data.nm_akun,
+      tombol      : `<div class="btn-group">
+        <button type="button" class="btn btn-sm btn-info" onclick="clearInput('`+data.kd+`', new Date('`+data.tanggal+`'), '`+data.persen+`', '`+data.reduksi+`', '`+data.rupiah+`', '`+data.dibuat+`', '`+data.nm_akun+`', true)"><i class="fa fa-pencil"></i></button>
+        <button type="button" class="btn btn-sm btn-warning" onclick="hapus('`+data.kd+`', '`+data.s_tanggal+`', '`+data.nm_instansi+`', '`+data.alias+`')"><i class="fa fa-trash"></i></button>
+      </div>`
+    };
+    
+    if(op=='UBAH'){ ttukar.row(active_row).remove().draw(); }
+    ttukar.row.add(data).draw();
+    active_row = null;
+    
+    clearInput('', new Date(), '', '', '', '', '<%= nama_user %>', false);
+  }
+
+  function reloadDetail() {
+    let t_html = '', ex_d = false;
+    for (let i=0; i<tdettukar.length; i++) {
+      t_html += `<tr><td>`+(i+1)+`.</td>
+        <td>`+tdettukar[i].nm_bbm+`</td>
+        <td class="text-center">`+tdettukar[i].liter+`</td>
+        <td class="text-center">`+tdettukar[i].max_liter+`</td>
+        <td class="text-center">`+(tdettukar[i].tukar_liter != null ? tdettukar[i].tukar_liter : 0)+`</td>
+        <td class="text-center">`+(tdettukar[i].harga).toLocaleString(['ban', 'id'])+`</td>
+        <td class="text-right">`+(tdettukar[i].rupiah != null ? tdettukar[i].rupiah : 0).toLocaleString(['ban', 'id'])+`</td>
+        <td class="text-right pad-btn">
+          `+`<div class="btn-group">
+            <button type="button" class="btn btn-sm btn-info" onclick="clearTukar(`+i+`, true)"><i class="fa fa-pencil"></i></button>
+          </div>`+`
+        </td></tr>`;
+    }
+    $('#tdettukar tbody').html(t_html);
+
+    calcTrans();
+  }
+
+  function calcTrans() {
+    m_rupiah = 0;
+    for (let i=0; i<tdettukar.length; i++) {
+      m_rupiah += tdettukar[i].rupiah;
+    }
+    
+    $('#rupiah').val(m_rupiah);
+    $('#txt-rupiah').html(m_rupiah.toLocaleString(['ban', 'id']));
+  }
+
+  function clearTukar(idx, show) {
+    $('#idx').val(idx);
+    $('#det_kd').val(tdettukar[idx].kd);
+    $('#kd_bbm').val(tdettukar[idx].kd_bbm);
+    $('#txt-bbm').html(tdettukar[idx].nm_bbm);
+    $('#txt-lembar').html(tdettukar[idx].lembar);
+    $('#txt-kupon').html(tdettukar[idx].skupon);
+    $('#dliter').val(tdettukar[idx].liter);
+    $('#txt-dliter').html(tdettukar[idx].liter);
+    $('#max_liter').val(tdettukar[idx].max_liter);
+    $('#txt-max_liter').html(tdettukar[idx].max_liter);
+    $('#tukar_liter').val(tdettukar[idx].tukar_liter != null ? tdettukar[idx].tukar_liter : 0);
+    $('#txt-tukar_liter').html($('#tukar_liter').val());
+    $('#harga').val(tdettukar[idx].harga);
+    $('#txt-harga').html((tdettukar[idx].harga).toLocaleString(['ban', 'id']));
+    $('#drupiah').val(tdettukar[idx].rupiah != null ? tdettukar[idx].rupiah : 0);
+    $('#txt-drupiah').html((tdettukar[idx].rupiah != null ? tdettukar[idx].rupiah : 0).toLocaleString(['ban', 'id']));
+
+    $("input[id^='ltr-'], label[id^='txt-ltr-']").hide();
+    $("input[id^='ltr-']").val('');
+    $("input[id^='ltr-']").attr('data-liter', 0);
+    let html = '', t_kupon = [], t_tuk = [];
+    for (let i=0; i<tdettukar[idx].kupon.length; i++) {
+      $("#ltr-"+(i+1)+", #txt-ltr-"+(i+1)).show();
+      t_kupon = (tdettukar[idx].kupon[i]).split('|');
+      $('#txt-ltr-'+(i+1)).html(t_kupon[0]+` Liter`);
+      $('#ltr-'+(i+1)).attr(`data-liter`, t_kupon[0]);
+      $('#ltr-'+(i+1)).attr(`max`, t_kupon[1]);
+
+      if (tdettukar[idx].s_tukar != null) {
+        for (let j=0; j<tdettukar[idx].s_tukar.length; j++) {
+          t_tuk = tdettukar[idx].s_tukar[j].split('|');
+          if (t_tuk[1] == t_kupon[0]) {
+            $('#ltr-'+(i+1)).val(t_tuk[0]);
+          }
+        }
+      }
+    }
+
+    if (show) { $('#modal-tambah').modal('show'); }
+  }
+
+  function addKupon() {
+    let idx = parseInt($('#idx').val());
+    tdettukar[idx]['tukar_liter'] = parseInt($('#tukar_liter').val());
+    tdettukar[idx]['rupiah'] = parseInt($('#drupiah').val());
+
+    let liter = 0, tukar = [];
+    $("input[id^='ltr-']").each(function(){
+      if ($(this).attr('data-liter') != 0 && this.value!='' && this.value!=0) {
+        liter = parseInt(this.value == '' ? 0 : this.value) * parseInt($(this).attr('data-liter'));
+        tukar.push(this.value+'|'+$(this).attr('data-liter')+'|'+liter);
+      }
+    });
+    tdettukar[idx]['s_tukar'] = tukar;
+    
+    $('#modal-tambah').modal('hide');
+    reloadDetail();
+    console.log(tdettukar);
+  }
+
+  function simpan() {
+    var rup = parseInt($('#rupiah').val());
+    if (tdettukar.length > 0 && rup > 0 && simpan_baru) {
+      $('#tanggal').data('DateTimePicker').format('YYYY-MM-DD HH:mm:ss');
+      let arr_form = $('#form-tukar').serializeArray();
+      arr_form.push({ name: 'det', value: JSON.stringify(tdettukar) });
+      
+      $("#box-tukar").LoadingOverlay('show');
+      $.ajax({
+        type: 'POST',
+        url: '/tukar_uang',
+        data: arr_form
+      }).done(function(data) {
+        if (data.res == 'SUKSES') {
+          if (data.op == 'BARU') {
+            js_fun.show_notif('<strong>Sukses!</strong> Data baru telah berhasil tersimpan.', 'success');
+          } else {
+            js_fun.show_notif('<strong>Sukses!</strong> Data telah berhasil dirubah.', 'success');
+          }
+        } else {
+          js_fun.show_notif('<strong>Gagal!</strong> Koneksi bermasalah.', 'warning');
+        }
+
+        if (data.res == 'SUKSES') {
+          reloadTampilan(data.op, data.data);
+          window.open('/tukar_uang/cetak/'+data.data.kd);
+        }
+      }).fail(function (jqXHR, textStatus) {
+        if(confirm('Simpan data gagal, coba lagi?')){ simpan(); }
+      }).always(function () {
+        $('#tanggal').data('DateTimePicker').format('DD MMM YYYY - HH:mm');
+        $('#box-tukar').LoadingOverlay('hide', true);
+      });
+    } else {
+      js_fun.show_notif('<strong>Peringatan!</strong> Tidak ada data yang perlu disimpan.', 'warning');
+    }
+    return false;
+  }
+
+  function hapus(kd, tgl, cus, spbu) {
+    if(confirm('Yakin ingin menghapus tukar uang untuk transaksi '+js_fun.ucwords(cus)+' di SPBU '+spbu+' pada '+tgl+' ?')){
+      $('#box-ttukar .box-body').LoadingOverlay('show');
+      jQuery.ajax({
+        type: 'DELETE',
+        url: '/tukar_uang',
+        data: { kd: kd }
+      }).done(function(data) {
+        if (data.res == 'SUKSES') {
+          ttukar.row(active_row).remove().draw();
+          active_row = null;
+          js_fun.show_notif('<strong>Sukses!</strong> Data berhasil dihapus.', 'success');
+        }else{ js_fun.show_notif('<strong>Gagal!</strong> Data gagal dihapus.', 'warning'); }
+      }).fail(function (jqXHR, textStatus) {
+        if(confirm('Hapus data gagal, coba lagi?')){ hapus(kd, tgl, cus, spbu); }
+      }).always(function () {
+        $('#box-ttukar .box-body').LoadingOverlay('hide', true);
+      });
+    }
+  }
+</script>

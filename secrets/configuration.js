@@ -29,7 +29,8 @@ module.exports = {
     kupon       : '',
     jual        : '',
     tukar_uang  : '',
-    tukar_kupon : ''
+    tukar_kupon : '',
+    seting      : ''
   },
   color: [ 'red', 'yellow', 'aqua', 'blue', 'light-blue', 'green', 'navy', 'teal', 'olive', 'lime', 'orange', 'fuchsia', 'purple', 'maroon', 'black' ],
   v_kupon: [ 2, 5, 10, 20 ],

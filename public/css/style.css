@@ -43,7 +43,8 @@ table .left-border {
 }
 
 .form-group p.up {
-  margin-top: 6px !important;
+  margin-top: 9px !important;
+  margin-bottom: 20px;
 }
 
 .form-group p.txt-big {
