@@ -82,16 +82,17 @@ router.post('/', (req, res, next) => {
 
         if (kd == '') {
           ret = { op: (jual.okd == '' ? 'BARU' : 'UBAH'), res: 'KODE'};
-        } else {
+        } else {          
           if (jual.okd == '') {
-            await pool.query('INSERT INTO jual (kd, kd_spbu, kd_instansi, tanggal, liter, rupiah, bayar, dibuat, oleh) VALUES($1, $2, $3, $4, $5, $6, $7, NOW(), $8)', [kd, jual.kd_spbu, jual.kd_instansi, jual.tanggal, jual.liter, jual.rupiah, jual.bayar, req.user.local.kd]);
+            await pool.query('INSERT INTO jual (kd, kd_spbu, kd_instansi, tanggal, liter, rupiah, bayar_saldo, bayar, dibuat, oleh) VALUES($1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9)', [kd, jual.kd_spbu, jual.kd_instansi, jual.tanggal, jual.liter, jual.rupiah, jual.bayar_saldo, jual.bayar, req.user.local.kd]);
           } else {
-            await pool.query('UPDATE jual SET kd=$1, kd_spbu=$2, kd_instansi=$3, tanggal=$4, liter=$5, rupiah=$6, bayar=$7, dibuat=NOW(), oleh=$8 WHERE kd=$9', [kd, jual.kd_spbu, jual.kd_instansi, jual.tanggal, jual.liter, jual.rupiah, jual.bayar, req.user.local.kd, jual.okd]);
+            await pool.query('UPDATE jual SET kd=$1, kd_spbu=$2, kd_instansi=$3, tanggal=$4, liter=$5, rupiah=$6, bayar_saldo=$7, bayar=$8, dibuat=NOW(), oleh=$9 WHERE kd=$10', [kd, jual.kd_spbu, jual.kd_instansi, jual.tanggal, jual.liter, jual.rupiah, jual.bayar_saldo, jual.bayar, req.user.local.kd, jual.okd]);
           }
+          await pool.query('UPDATE instansi SET saldo_tukar=(saldo_tukar-('+jual.bayar_saldo+'-'+jual.obayar_saldo+')) WHERE dc='+jual.kd_instansi);
 
           let { rows } = await pool.query('SELECT (coalesce(max(kd),0)+1) as kd FROM det_jual');
           let det_kd = rows[0].kd;
-
+          
           await pool.query('DELETE FROM det_jual WHERE kd_jual=$1', [kd]);
 
           //let kupon = await pool.query('SELECT d.kd_bbm, d.jenis, MAX(d.kupon_awal+d.lembar) AS kpn_baru FROM det_jual d, jual j WHERE d.kd_jual=j.kd AND j.kd_spbu=$1 GROUP BY d.kd_bbm, d.jenis ORDER BY d.kd_bbm, d.jenis', [jual.kd_spbu]);
@@ -135,6 +136,17 @@ router.get('/detail', (req, res, next) => {
       if (err) return next(err);
       res.send(data.rows);
     })
+  }
+});
+
+router.get('/instansi', (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    res.redirect('/signin');
+  } else {
+    pool.query('SELECT * FROM instansi', (err, data) => {
+      if (err) return next(err);
+      res.send(data.rows);
+    });
   }
 });
 
@@ -196,6 +208,7 @@ router.delete('/', (req, res, next) => {
         await pool.query('BEGIN');
         await pool.query('DELETE FROM det_jual WHERE kd_jual=$1', [req.body.kd]);
         await pool.query('DELETE FROM jual WHERE kd=$1', [req.body.kd]);
+        await pool.query('UPDATE instansi SET saldo_tukar=(saldo_tukar+'+req.body.saldo+') WHERE dc='+req.body.instansi);
         await pool.query('COMMIT');
         res.send({ op: 'HAPUS', res: 'SUKSES' });
       } catch (e) {

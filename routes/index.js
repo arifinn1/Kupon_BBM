@@ -9,6 +9,7 @@ const kupon = require('./kupon');
 const spbu = require('./spbu');
 const jual = require('./jual');
 const tukar_uang = require('./tukar_uang');
+const tukar_kupon = require('./tukar_kupon');
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use('/kupon', kupon);
 router.use('/spbu', spbu);
 router.use('/jual', jual);
 router.use('/tukar_uang', tukar_uang);
+router.use('/tukar_kupon', tukar_kupon);
 
 module.exports = router;

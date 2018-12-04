@@ -28,10 +28,11 @@
                 <th>Tanggal</th>
                 <th>Liter</th>
                 <th>Rupiah</th>
+                <th>Bayar Saldo</th>
                 <th>Bayar</th>
                 <th>Dibuat</th>
                 <th>Oleh</th>
-                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="clearInput('', '', '', new Date(), '', '', '', '', '<%= nama_user %>', true)"><i class="fa fa-plus"></i></button></th>
+                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="clearInput('', '', '', new Date(), '', '', 0, '', '', '<%= nama_user %>', true)"><i class="fa fa-plus"></i></button></th>
               </tr>
             </thead>
             <tfoot>
@@ -42,6 +43,7 @@
                 <th>Tanggal</th>
                 <th>Liter</th>
                 <th>Rupiah</th>
+                <th>Bayar Saldo</th>
                 <th>Bayar</th>
                 <th>Dibuat</th>
                 <th>Oleh</th>
@@ -57,13 +59,14 @@
                   <td><%= jual[i].s_tanggal %></td>
                   <td><%= jual[i].liter %></td>
                   <td><%= jual[i].rupiah %></td>
+                  <td><%= jual[i].bayar_saldo %></td>
                   <td><%= jual[i].bayar %></td>
                   <td><%= jual[i].s_dibuat %></td>
                   <td><%= jual[i].nm_akun %></td>
                   <td>
                     <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= jual[i].kd %>', '<%= jual[i].kd_spbu %>', '<%= jual[i].kd_instansi %>', new Date('<%= jual[i].tanggal %>'), '<%= jual[i].liter %>', '<%= jual[i].rupiah %>', '<%= jual[i].bayar %>', '<%= jual[i].dibuat %>', '<%= jual[i].nm_akun %>', true)"><i class="fa fa-pencil"></i></button>
-                      <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= jual[i].kd %>', '<%= jual[i].s_tanggal %>', '<%= jual[i].nm_instansi %>', '<%= jual[i].alias %>')"><i class="fa fa-trash"></i></button>
+                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= jual[i].kd %>', '<%= jual[i].kd_spbu %>', '<%= jual[i].kd_instansi %>', new Date('<%= jual[i].tanggal %>'), '<%= jual[i].liter %>', '<%= jual[i].rupiah %>', '<%= jual[i].bayar_saldo %>', '<%= jual[i].bayar %>', '<%= jual[i].dibuat %>', '<%= jual[i].nm_akun %>', true)"><i class="fa fa-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= jual[i].kd %>', '<%= jual[i].s_tanggal %>', '<%= jual[i].nm_instansi %>', '<%= jual[i].alias %>', '<%= jual[i].bayar_saldo %>', '<%= jual[i].kd_instansi %>')"><i class="fa fa-trash"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -104,9 +107,10 @@
               <div class="col-md-5">
                 <div class="form-group">
                   <label>Instansi</label>
+                  <input type="hidden" name="saldo_tukar" id="saldo_tukar">
                   <select class="form-control" id="kd_instansi" name="kd_instansi" data-live-search="true" required>
                     <% for (var i=0; i<instansi.length; i++) { %>
-                      <option value="<%= instansi[i].dc %>"><%= instansi[i].nama %></option>
+                      <option value="<%= instansi[i].dc %>"><%= instansi[i].nama+(instansi[i].saldo_tukar != 0 ? ' - '+instansi[i].saldo_tukar : '') %></option>
                     <% } %>
                   </select>
                 </div>
@@ -144,16 +148,25 @@
                     </div>
                   </div>
 
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <div class="form-group">
                       <label>Dibuat</label>
                       <p id="txt-dibuat">...</p>
                     </div>
                   </div>
-                  <div class="col-md-6">
+
+                  <div class="col-md-4">
                     <div class="form-group">
                       <label>Oleh</label>
                       <p id="txt-oleh">...</p>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label>Bayar Saldo</label>
+                      <input type="hidden" name="obayar_saldo" id="obayar_saldo">
+                      <input type="number" class="form-control" placeholder="Bayar Saldo" name="bayar_saldo" id="bayar_saldo">
                     </div>
                   </div>
                 </div>
@@ -193,7 +206,7 @@
           <div class="box-footer">
             <button id="btn-simpan" type="submit" class="btn btn-primary btn-sm"><i class="fa fa-cloud"></i> &nbsp; SIMPAN</button>
             <a id="btn-cetak" type="button" class="btn btn-success btn-sm" target="_blank"><i class="fa fa-print"></i> &nbsp; CETAK</a>
-            <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', '', new Date(), '', '', '', '', '', false)"><i class="fa fa-times"></i> &nbsp; BATAL</button>
+            <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', '', new Date(), '', '', 0, '', '', '', false)"><i class="fa fa-times"></i> &nbsp; BATAL</button>
           </div>
         </form>
       </div>
@@ -328,6 +341,7 @@
         { data: 's_tanggal' },
         { data: 'liter' },
         { data: 'rupiah' },
+        { data: 'bayar_saldo' },
         { data: 'bayar' },
         { data: 's_dibuat' },
         { data: 'nm_akun' },
@@ -371,6 +385,21 @@
       if (this.value != '') $('#jenis').focus();
     });
 
+    $('#kd_instansi').on('rendered.bs.select', function() {
+      $('#saldo_tukar').val(0);
+      for (let i=0; i<instansi.length; i++) {
+        if (this.value == instansi[i].dc) {
+          $('#saldo_tukar').val(instansi[i].saldo_tukar);
+          break;
+        }
+      }
+    });
+
+    $('#bayar_saldo').keyup(function() {
+      hitung_msaldo();
+      this.value = this.value > max_saldo ? max_saldo : this.value;
+    });
+
     $('#jenis').change(function() {
       getKuponAwal();
       if (this.value != '') $('#dliter').focus();
@@ -401,12 +430,14 @@
 
   $('#box-jual').hide();
   let tjual, tdetjual = [], tkodekupon, active_row, now = true;
-  let bbm = JSON.parse((`<%= JSON.stringify(bbm) %>`).replace(/&quot;/g, '"'));
+  let bbm = JSON.parse((`<%= JSON.stringify(bbm) %>`).replace(/&quot;/g, '"')),
+    instansi = JSON.parse((`<%= JSON.stringify(instansi) %>`).replace(/&quot;/g, '"'));
 
-  let m_liter = 0, m_rupiah = 0;
+  let m_liter = 0, m_rupiah = 0, max_saldo = 0;
 
-  function clearInput(kd, kd_spbu, kd_instansi, tanggal, liter, rupiah, bayar, dibuat, nm_akun, show) {
-    if (show) {      
+  function clearInput(kd, kd_spbu, kd_instansi, tanggal, liter, rupiah, bayar_saldo, bayar, dibuat, nm_akun, show) {
+    $('#saldo_tukar').val(0);
+    if (show) {
       $('#box-tjual').slideUp('fast', function() {
         $('#box-jual').slideDown('fast');
 
@@ -433,14 +464,15 @@
     $('#okd').val(kd);
     $('#kd').val(kd);
     if (kd == '') {
-      $('#kd_spbu').selectpicker('deselectAll');
-      $('#kd_instansi').selectpicker('deselectAll');
+      $('#kd_spbu').selectpicker('val', '');
+      $('#kd_instansi').selectpicker('val', '');
+
       $('#tdetjual button').show();
       $('#btn-simpan').show();
       $('#btn-cetak').hide();
     } else {
-      $('#kd_spbu').val(kd_spbu);
-      $('#kd_instansi').val(kd_instansi);
+      $('#kd_spbu').selectpicker('val', kd_spbu);
+      $('#kd_instansi').selectpicker('val', kd_instansi);
       $('#tdetjual button').hide();
       $('#btn-simpan').hide();
       $('#btn-cetak').show();
@@ -450,7 +482,8 @@
     now = kd == '';
 
     $('#tanggal').data("DateTimePicker").date(tanggal);
-    $('#bayar').val(bayar);
+    $('#obayar_saldo').val(bayar_saldo);
+    $('#bayar_saldo').val(bayar_saldo);
     $('#txt-dibuat').html(dibuat != '' ? js_fun.conv_date(new Date(dibuat)) : '');
     $('#txt-oleh').html(nm_akun);
   }
@@ -459,7 +492,7 @@
     if (tdetjual.length > 0) {
       $('#tanggal').data('DateTimePicker').format('YYYY-MM-DD HH:mm:ss');
       let arr_form = $('#form-jual').serializeArray();
-      arr_form[8] = { name: 'det', value: JSON.stringify(tdetjual) };
+      arr_form.push({ name: 'det', value: JSON.stringify(tdetjual) });
       
       $("#box-jual").LoadingOverlay('show');
       $.ajax({
@@ -480,6 +513,7 @@
         if (data.res == 'SUKSES') {
           reloadTampilan(data.op, data.data);
           getKodeKupon();
+          window.location.reload(true);
           window.open('/jual/cetak/'+data.data.kd);
         }
       }).fail(function (jqXHR, textStatus) {
@@ -494,22 +528,23 @@
     return false;
   }
 
-  function hapus(kd, tgl, cus, spbu) {
+  function hapus(kd, tgl, cus, spbu, saldo, instansi) {
     if(confirm('Yakin ingin menghapus Transaksi '+js_fun.ucwords(cus)+' di SPBU '+spbu+' pada '+tgl+' ?')){
       $('#box-tjual .box-body').LoadingOverlay('show');
       jQuery.ajax({
         type: 'DELETE',
         url: '/jual',
-        data: { kd: kd }
+        data: { kd: kd, saldo: saldo, instansi: instansi }
       }).done(function(data) {
         if (data.res == 'SUKSES') {
           tjual.row(active_row).remove().draw();
           active_row = null;
           getKodeKupon();
+          window.location.reload(true);
           js_fun.show_notif('<strong>Sukses!</strong> Data berhasil dihapus.', 'success');
         }else{ js_fun.show_notif('<strong>Gagal!</strong> Data gagal dihapus.', 'warning'); }
       }).fail(function (jqXHR, textStatus) {
-        if(confirm('Hapus data gagal, coba lagi?')){ hapus(kd, tgl, cus, spbu); }
+        if(confirm('Hapus data gagal, coba lagi?')){ hapus(kd, tgl, cus, spbu, saldo, instansi); }
       }).always(function () {
         $('#box-tjual .box-body').LoadingOverlay('hide', true);
       });
@@ -524,12 +559,13 @@
       s_tanggal   : data.s_tanggal,
       liter       : data.liter,
       rupiah      : data.rupiah,
+      bayar_saldo : data.bayar_saldo,
       bayar       : data.bayar,
       s_dibuat    : data.s_dibuat,
       nm_akun     : data.nm_akun,
       tombol      : `<div class="btn-group">
-        <button type="button" class="btn btn-sm btn-info" onclick="clearInput('`+data.kd+`', '`+data.kd_spbu+`', '`+data.kd_instansi+`', new Date('`+data.tanggal+`'), '`+data.liter+`', '`+data.rupiah+`', '`+data.bayar+`', '`+data.dibuat+`', '`+data.nm_akun+`', true)"><i class="fa fa-pencil"></i></button>
-        <button type="button" class="btn btn-sm btn-warning" onclick="hapus('`+data.kd+`', '`+data.s_tanggal+`', '`+data.nm_instansi+`', '`+data.alias+`')"><i class="fa fa-trash"></i></button>
+        <button type="button" class="btn btn-sm btn-info" onclick="clearInput('`+data.kd+`', '`+data.kd_spbu+`', '`+data.kd_instansi+`', new Date('`+data.tanggal+`'), '`+data.liter+`', '`+data.rupiah+`', '`+data.bayar_saldo+`', '`+data.bayar+`', '`+data.dibuat+`', '`+data.nm_akun+`', true)"><i class="fa fa-pencil"></i></button>
+        <button type="button" class="btn btn-sm btn-warning" onclick="hapus('`+data.kd+`', '`+data.s_tanggal+`', '`+data.nm_instansi+`', '`+data.alias+`', '`+data.bayar_saldo+`', '`+data.kd_instansi+`')"><i class="fa fa-trash"></i></button>
       </div>`
     };
     
@@ -537,7 +573,7 @@
     tjual.row.add(data).draw();
     active_row = null;
 
-    clearInput('', '', '', new Date(), '', '', '', '', '', false);
+    clearInput('', '', '', new Date(), '', '', 0, '', '', '', false);
   }
 
   function reloadDetail() {
@@ -554,7 +590,7 @@
         <td class="text-right pad-btn">
           `+($('#okd').val() == '' ? `<div class="btn-group">
             <button type="button" class="btn btn-sm btn-info" onclick="clearKupon(`+i+`, '`+tdetjual[i].kd+`', `+tdetjual[i].kd_bbm+`, `+tdetjual[i].jenis+`, `+tdetjual[i].liter+`, `+tdetjual[i].lembar+`, `+tdetjual[i].kupon+`, `+tdetjual[i].s_kupon+`, `+tdetjual[i].rupiah+`, true)"><i class="fa fa-pencil"></i></button>
-            <button type="button" class="btn btn-sm btn-warning" onclick="hapus(`+i+`, '`+tdetjual[i].nm_bbm+`', '`+tdetjual[i].jenis+`')"><i class="fa fa-trash"></i></button>
+            <button type="button" class="btn btn-sm btn-warning" onclick="hapusKupon(`+i+`, '`+tdetjual[i].nm_bbm+`', '`+tdetjual[i].jenis+`')"><i class="fa fa-trash"></i></button>
           </div>` : '')+`
         </td></tr>`;
     }
@@ -637,6 +673,16 @@
     
     $('#rupiah').val(m_rupiah);
     $('#txt-rupiah').html(m_rupiah.toLocaleString(['ban', 'id']));
+
+    hitung_msaldo();
+    let bsal = $('#bayar_saldo');      
+    bsal.val(bsal.val() > max_saldo ? max_saldo : bsal.val());
+  }
+
+  function hitung_msaldo() {
+    let ob_saldo = parseInt($('#obayar_saldo').val()),
+      saldo_tukar = parseInt($('#saldo_tukar').val());
+    max_saldo = m_rupiah<(ob_saldo+saldo_tukar) ? m_rupiah : ob_saldo+saldo_tukar;
   }
   
   function getKupon(index) {
@@ -712,7 +758,6 @@
         data: { spbu: $('#kd_spbu').val() }
       }).done(function(data) {
         tkodekupon = data;
-        console.log(data);
       }).fail(function (jqXHR, textStatus) {
         if(confirm('Ambil kode kupon gagal, coba lagi?')){ getKodeKupon(); }
       }).always(function () {

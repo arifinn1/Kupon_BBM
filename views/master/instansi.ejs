@@ -15,13 +15,15 @@
               <tr>
                 <th>DC</th>
                 <th>Nama</th>
-                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="clearInput('', '', true)"><i class="fa fa-plus"></i></button></th>
+                <th>Saldo Tukar</th>
+                <th class="text-right has-button"><button type="button" class="btn btn-primary btn-sm" onclick="clearInput('', '', 0, true)"><i class="fa fa-plus"></i></button></th>
               </tr>
             </thead>
             <tfoot>
               <tr>
                 <th>DC</th>
                 <th>Nama</th>
+                <th>Saldo Tukar</th>
                 <th></th>
               </tr>
             </tfoot>
@@ -30,9 +32,10 @@
                 <tr>
                   <td><%= instansi[i].dc %></td>
                   <td><%= instansi[i].nama %></td>
+                  <td><%= instansi[i].saldo_tukar %></td>
                   <td>
                     <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= instansi[i].dc %>', '<%= instansi[i].nama %>', true)"><i class="fa fa-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-info" onclick="clearInput('<%= instansi[i].dc %>', '<%= instansi[i].nama %>', '<%= instansi[i].saldo_tukar %>', true)"><i class="fa fa-pencil"></i></button>
                       <button type="button" class="btn btn-sm btn-warning" onclick="hapus('<%= instansi[i].dc %>', '<%= instansi[i].nama %>')"><i class="fa fa-trash"></i></button>
                     </div>
                   </td>
@@ -55,6 +58,7 @@
                 <div class="form-group">
                   <label>DC</label>
                   <input type="hidden" name="odc" id="odc">
+                  <input type="hidden" id="saldo_tukar">
                   <input type="text" class="form-control" placeholder="Kode DC" name="dc" id="dc" required>
                 </div>
               </div>
@@ -69,7 +73,7 @@
 
           <div class="box-footer">
             <button type="submit" class="btn btn-primary btn-sm"><i class="now-ui-icons ui-1_check"></i> SIMPAN</button>
-            <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
+            <button type="button" class="btn btn-default btn-sm" onclick="clearInput('', '', 0, false)"><i class="now-ui-icons ui-1_simple-remove"></i> BATAL</button>
           </div>
         </form>
       </div>
@@ -83,6 +87,7 @@
       columns: [
         { data: 'dc' },
         { data: 'nama' },
+        { data: 'saldo_tukar' },
         { data: 'tombol', className: 'text-right has-button', orderable: false }
       ]
     });
@@ -95,7 +100,7 @@
   $('#box-instansi').hide();
   var tinstansi, active_row;
 
-  function clearInput(dc, nama, show) {
+  function clearInput(dc, nama, saldo_tukar, show) {
     if (show) {
       $('#box-tinstansi').slideUp('fast', function() {
         $('#box-instansi').slideDown('fast');
@@ -120,6 +125,7 @@
     }
     
     $('#odc').val(dc);
+    $('#saldo_tukar').val(saldo_tukar);
     $('#nama').val(nama);
   }
 
@@ -175,12 +181,13 @@
   }
 
   function reloadTampilan(op) {
-    var dc = $('#dc').val(), nama = $('#nama').val();
+    var dc = $('#dc').val(), nama = $('#nama').val(), saldo_tukar = $('#saldo_tukar').val();
     var data = {
-      dc      : dc,
-      nama    : nama,
-      tombol  : `<div class="btn-group">
-        <button type="button" class="btn btn-sm btn-info" onclick="clearInput('`+dc+`', '`+nama+`', true)"><i class="fa fa-pencil"></i></button>
+      dc          : dc,
+      nama        : nama,
+      saldo_tukar : saldo_tukar,
+      tombol      : `<div class="btn-group">
+        <button type="button" class="btn btn-sm btn-info" onclick="clearInput('`+dc+`', '`+nama+`', '`+saldo_tukar+`', true)"><i class="fa fa-pencil"></i></button>
         <button type="button" class="btn btn-sm btn-warning" onclick="hapus('`+dc+`', '`+nama+`')"><i class="fa fa-trash"></i></button>
       </div>`
     };
@@ -189,7 +196,7 @@
     tinstansi.row.add(data).draw();
     active_row = null;
 
-    clearInput('', '', false);
+    clearInput('', '', 0, false);
     $('#alert-input').html('');
   }
 </script>

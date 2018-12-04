@@ -87,8 +87,21 @@
         <th class="text-right">`+liter+`</th>
         <th class="text-right" colspan="5">JUMLAH PEMBAYARAN</th>
         <th class="left-border">Rp</th><th class="text-right">`+rupiah.toLocaleString('id-ID')+`</th>
-      </tr><tr>
-        <th class="text-center f-12" colspan="8">`+js_fun.terbilang(rupiah).toUpperCase()+`</th>
+      </tr>`;
+      
+    if (jual.bayar_saldo>0) {
+      t_html += `<tr class="f-12">
+          <th class="text-right" colspan="6">BAYAR DENGAN SALDO</th>
+          <th class="left-border">Rp</th><th class="text-right">`+jual.bayar_saldo.toLocaleString('id-ID')+`</th>
+        </tr>
+        <tr class="f-12">
+          <th class="text-right" colspan="6">SISA BAYAR</th>
+          <th class="left-border">Rp</th><th class="text-right">`+(rupiah - jual.bayar_saldo).toLocaleString('id-ID')+`</th>
+        </tr>`;
+    }
+
+    t_html += `<tr>
+        <th class="text-center f-12" colspan="8">`+js_fun.terbilang(jual.bayar_saldo>0 ? rupiah-jual.bayar_saldo : rupiah).toUpperCase()+`</th>
       </tr>`;
     
     $('#tdetail tbody').html(t_html);

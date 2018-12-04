@@ -1,0 +1,118 @@
+<% layout('layout-blank') -%>
+
+<body class="f-11">
+  <div class="container-fluid">
+    <div class="row address-header">
+      <div class="col-xs-4 text-center" style="font-size: 28px;
+      margin-bottom: -5px;">
+        <span><%= spbu.nama %></span>
+      </div>
+
+      <div class="col-xs-8">
+        <span class="f-14"><b>SPBU <%= spbu.kd_pertamina+` `+spbu.alias %></b></span><br>
+        <span><%= spbu.alamat+`, Telp. `+spbu.telp %></span>
+      </div>
+    </div>
+
+    <div class="row f-12">
+      <div class="col-xs-2 f-18">KUITANSI</div>
+
+      <div class="col-xs-4 text-right">
+        <div class="row">
+          <div class="col-xs-12">No :</div>
+          <div class="col-xs-12">Sudah diterima dari :</div>
+        </div>
+      </div>
+
+      <div class="col-xs-6">
+        <div class="row">
+          <div class="col-xs-12"><%= tukar.kd %></div>
+          <div class="col-xs-12"><div class="alert alert-bw-skinny" role="alert"><%= tukar.kd_instansi+` - `+tukar.nm_instansi %></div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row f-12">
+      <div class="col-xs-6 text-right">
+        <div class="row">
+          <div class="col-xs-12">Reduksi :</div>
+        </div>
+      </div>
+
+      <div class="col-xs-6">
+        <div class="row">
+          <div class="col-xs-12"><%= tukar.reduksi %></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <table id="tdetail" class="table table-striped outer-border mini-pad">
+          <thead>
+            <tr>
+              <th class="text-center f-12" colspan="8">U R A I A N</th>
+              <th class="text-center f-12 left-border" colspan="2">U A N G</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12 f-12">Cilacap, &nbsp; <%= tukar.s_tanggal %></div>
+      
+      <div class="col-xs-12 f-12 signature text-right"></div>
+    </div>
+
+  </div>
+</body>
+
+<script>
+  let tukar = JSON.parse((`<%= JSON.stringify(tukar) %>`).replace(/&quot;/g, '"'));
+  let det_tukar = JSON.parse((`<%= JSON.stringify(det_tukar) %>`).replace(/&quot;/g, '"'));
+  
+  $(document).ready(function() {
+    let t_html = '', liter = 0, rupiah = 0, s_tukar = [], s_dtukar = [];
+    t_html += `<tr><td class="text-center" colspan="8">Penukaran kupon > Saldo Tukar di SPBU `+tukar.kd_pertamina+` `+tukar.alias+` berupa :</td><td class="left-border" colspan="2"></td></tr>`;
+    console.log(det_tukar);
+
+    for (let i=0; i<det_tukar.length; i++) {
+      liter += det_tukar[i].tukar_liter;
+      rupiah += det_tukar[i].rupiah;
+      s_tukar = det_tukar[i].s_tukar.split(';');
+      
+      for (let j=0; j<s_tukar.length; j++) {
+        s_dtukar = s_tukar[j].split('|');
+        t_html += '<tr>'+(j==0 ? `<td class="text-right fit">`+det_tukar[i].tukar_liter+`</td>
+          <td>Ltr `+det_tukar[i].nama+`</td>` : '');
+        
+        t_html += `<td class="text-right fit" colspan="`+(j>0 ? 3:1)+`">@</td>
+          <td class="text-right fit">`+s_dtukar[1]+`</td>
+          <td class="text-right">`+s_dtukar[0]+`</td>
+          <td colspan="`+(j>0 ? 3:1)+`">lbr</td>
+          `+(j>0 ? `<td class="fit left-border" colspan="2"></td>`:``);
+        
+        t_html += (j==0 ? `<td class="fit">Rp</td>
+          <td class="text-right fit">`+det_tukar[i].harga.toLocaleString(['ban', 'id'])+`</td>        
+          <td class="fit left-border">Rp</td>
+          <td class="text-right fit">`+det_tukar[i].rupiah.toLocaleString('id-ID')+`</td>`:'')+'</tr>';
+      }
+    }
+    t_html += `<tr class="f-12">
+        <th class="text-right"></th>
+        <th class="text-right" colspan="7">JUMLAH PEMBAYARAN</th>
+        <th class="left-border">Rp</th><th class="text-right">`+rupiah.toLocaleString('id-ID')+`</th>
+      </tr><tr>
+        <th class="text-center f-12" colspan="10">`+js_fun.terbilang(rupiah).toUpperCase()+`</th>
+      </tr>`;
+    
+    $('#tdetail tbody').html(t_html);
+
+    window.print();
+  });
+</script>
